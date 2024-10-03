@@ -1,24 +1,30 @@
+require("dotenv").config();
 const nodemailer = require('nodemailer');
-const sendEmail = async(receiverEmail, message) =>{
+const sendEmail = async(receiverEmail, subject, message) =>{
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail', // Or use any other service (like Outlook, Yahoo, etc.)
+            source:true,
+            host:'smtp.gmail.com',
+            port:465,
             auth: {
-                user: 'shivhack999@gmail.com', 
-                pass: '#Anjali143$', 
+                user: "shivhack999@gmail.com", 
+                pass: process.env.GMAIL_PASSWORD, 
             },
         });
-
         // Set up email data
-    const mailOptions = {
-        from: 'shivhack999@gmail.com',      // Sender address
-        to: receiverEmail,                 // List of receivers
-        subject: 'Your OTP Code',          // Subject line
-        text: message,   
-        html: `<p>${message}</p>`, // HTML body (optional)
-    };
+        const mailOptions = {
+            from: "shivhack999@gmail.com",      // Sender address
+            to: receiverEmail,                 // List of receivers
+            subject: subject,          // Subject line
+            text: message,
+        };
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+        return true;
 
     } catch (error) {
+        console.error("error" + error)
         return false;
     }
 }

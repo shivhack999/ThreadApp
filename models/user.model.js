@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
     mobile:{
         type:Number,
         required:true,
+        unique:true,
         minlength: 10,
         maxlength: 10
     },
