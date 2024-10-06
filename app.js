@@ -13,6 +13,7 @@ app.use(cookieParser());
 app.use('/users',userRoutes);
 
 const port = 8080;
-app.listen(port, ()=>{
+app.listen(port, () => {
     console.log(`server is running ${port}`);
 })
+
