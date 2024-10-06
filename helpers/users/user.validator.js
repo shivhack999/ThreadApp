@@ -17,6 +17,7 @@ exports.userRegister = [
         min:10,
         max:10
     }),
+    check('email','Enter the valid email Id').isEmail(),
     check('gender', 'Gender is required').not().isEmpty(),
     check('password','Password must be greater then 8 Characters, and Contains one capital letter, one spacial symbol, one small letter and numbers')
     .isStrongPassword({
