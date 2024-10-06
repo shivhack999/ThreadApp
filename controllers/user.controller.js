@@ -11,6 +11,10 @@ const generateAccessToken = require('../helpers/Common/token/accessToken');
 const generateRefreshToken = require('../helpers/Common/token/refreshToken');
 const generateOTP = require('../helpers/common/generateOTP');
 const sendMail = require('../helpers/Common/mailer');
+const sendMobileOTP = require('../utils/mobiles/sentMobileOTP.util');
+const saveMobileOTPToDB = require('../utils/mobiles/saveMobileOTPToDB.util');
+const getSavedMobileOTPFromDB = require('../utils/mobiles/getSavedOTPFromDB.util');
+
 const login = async(req,res) =>{
     try {
         const errors = validationResult(req);
@@ -20,20 +24,27 @@ const login = async(req,res) =>{
                 errors:errors.array()
             })
         }
-        const {mobile, password} = req.body;
+        const {email, password} = req.body;
 
-        const userData = await Users.findOne({mobile:mobile}).exec();
+        const userData = await Users.findOne({email}).exec();
+        console.log(userData)
         if(!userData){
             return res.status(400).json({
                 success:false,
-                response:"Mobile number not register?" 
+                response:"Email id not register?" 
             });
         }
         const passwordMatch = await bcrypt.compare(password, userData.password);
         if (!passwordMatch) {
             return res.status(400).json({ 
                 success:false,
-                response: 'Mobile No. and password is Incorrect!'
+                response: 'Email id and password is Incorrect!'
+            });
+        }
+        if(userData.active === false){
+            return res.status(400).json({ 
+                success:false,
+                response: 'Your account is temporary blocked please connect with customer care.'
             });
         }
         const accessToken = await generateAccessToken({userData:userData});
@@ -43,7 +54,7 @@ const login = async(req,res) =>{
             {$set:{refreshToken:refreshToken}},
             {new:true}
         ) 
-        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken");
+        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
         const option ={
             httpOnly:true,
             secure:true,
@@ -77,8 +88,14 @@ const register = async(req,res) =>{
                 errors:errors.array()
             })
         }
-        const {name, mobile, gender, password} = req.body;
-        const preUser = await Users.findOne({mobile});
+        const {fullName, mobile, email, gender, password} = req.body;
+        const preUser = await Users.findOne({
+            $or:[
+                {email:email},
+                {mobile:mobile}
+            ]
+        });
+        // console.log(preUser)
         if(preUser){
             return res.status(400).json({
                 success:false,
@@ -86,9 +103,9 @@ const register = async(req,res) =>{
             })
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword)
+        // console.log(hashedPassword)
         const newUser = new Users({
-            name, mobile, password:hashedPassword, gender
+            fullName, mobile, password:hashedPassword, gender, e_verify:true
         });
         const userData = await newUser.save();
         const accessToken = await generateAccessToken({userData:userData});
@@ -98,7 +115,7 @@ const register = async(req,res) =>{
             {$set:{refreshToken:refreshToken}},
             {new:true}
         ) 
-        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken");
+        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
         const option ={
             httpOnly:true,
             secure:true,
@@ -128,8 +145,8 @@ const emailOTPSent = async(req,res) =>{
     try {
         const email = req.body.email;
         console.log(email);
-        const Exist_Email = await Users.findOne({email:email});
-        if(Exist_Email){
+        const Exist_Email = await Users.findOne({email:email, e_verify:true});
+        if(Exist_Email && Exist_Email.e_verify == true){
             return res.status(400).json({
                 success:false,
                 response:'Email already register.'
@@ -196,6 +213,65 @@ const emailOTPVerify = async(req,res) =>{
     }
 }
 
+const logout = async(req,res) =>{
+    try {
+        
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error.msg
+        })
+    }
+}
+const mobileOTPSent = async(req,res) =>{
+    try {
+        const mobile = req.body.mobile;
+        const Exist_Mobile = await Users.findOne({mobile:mobile , m_verify:true});
+        if(Exist_Mobile){
+            return res.status(400).json({
+                success:false,
+                response:'Mobile already register.'
+            })
+        }
+        const OTP = await generateOTP();
+        const message = `Your OTP verification code is : ${OTP} `;
+        const OTPSentResponse = await sendMobileOTP(mobile,message); // write SMS code in below function 
+        if(OTPSentResponse){
+            await saveMobileOTPToDB(mobile, OTP);
+            return res.status(200).json({
+                success:true,
+                response:'OTP sent successfully'
+            });
+        }
+        return res.status(400).json({
+            success:false,
+            response:'something is missing Please try again !'
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error.msg
+        })
+    }
+};
+const mobileOTPVerify = async(req,res) =>{
+    try {
+        const {mobile, opt} = req.body;
+        const savedOTP = await getSavedOTPFromDB(mobile);
+        if(savedOTP == null){
+            return res.status(400).json({
+                success:false,
+                response:'OPT has been expired'
+            })
+
+        }
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
 
 
 const image = async(req,res) =>{
@@ -208,26 +284,7 @@ const image = async(req,res) =>{
         })
     }
 }
-const mobileVerify = async(req,res) =>{
-    try {
-        
-    } catch (error) {
-        return res.status(400).json({
-            success:false,
-            response:error.msg
-        })
-    }
-};
-const logout = async(req,res) =>{
-    try {
-        
-    } catch (error) {
-        return res.status(400).json({
-            success:false,
-            response:error.msg
-        })
-    }
-}
+
 const forgetPassword = async(req,res) =>{
     try {
         
@@ -256,7 +313,8 @@ module.exports={
     image,
     emailOTPSent,
     emailOTPVerify,
-    mobileVerify,
+    mobileOTPSent,
+    mobileOTPVerify,
     resetPassword,
     logout
 }

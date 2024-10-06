@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
-    name:{
+    fullName:{
         type:String,
         required:true,
         minlength: 3,
@@ -47,6 +47,10 @@ const userSchema = mongoose.Schema({
     create_At:{
         type:Date,
         default: Date.now()
+    },
+    active:{
+        type:Boolean,
+        default:true
     }
 });
 const user = mongoose.model("Users", userSchema);
