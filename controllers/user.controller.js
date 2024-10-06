@@ -70,7 +70,7 @@ const login = async(req,res) =>{
 }
 const register = async(req,res) =>{
     try {
-        console.log(req.body)
+        console.log("Registration Data Received", req.body)
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(500).json({
