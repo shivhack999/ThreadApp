@@ -81,7 +81,7 @@ const login = async(req,res) =>{
 }
 const register = async(req,res) =>{
     try {
-        console.log(req.body)
+        console.log("Registration Data Received", req.body)
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(500).json({
@@ -152,7 +152,13 @@ const emailOTPSent = async(req,res) =>{
             })
         }
         const email = req.body.email;
-        console.log(email);
+        console.log(email)
+        if(!email){
+            return res.status(400).json({
+                success:false,
+                response:"Enter the valid email!"
+            })
+        }
         const Exist_Email = await Users.findOne({email:email, e_verify:true});
         if(Exist_Email){
             return res.status(400).json({
