@@ -144,10 +144,17 @@ const register = async(req,res) =>{
 }
 const emailOTPSent = async(req,res) =>{
     try {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(500).json({
+                success:false,
+                errors:errors.array()
+            })
+        }
         const email = req.body.email;
         console.log(email);
         const Exist_Email = await Users.findOne({email:email, e_verify:true});
-        if(Exist_Email && Exist_Email.e_verify == true){
+        if(Exist_Email){
             return res.status(400).json({
                 success:false,
                 response:'Email already register.'

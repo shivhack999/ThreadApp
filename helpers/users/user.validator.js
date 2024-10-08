@@ -1,5 +1,8 @@
 const {check} = require('express-validator');
-
+exports.userEmailSent = [
+    check("email","Enter the Email ID").not().isEmpty(),
+    check("email", "Enter the valid Email ID").isEmail()
+]
 exports.userLogin = [
     check('email','Enter the valid email Id').isEmail(),
     check('password','Password must be greater then 8 Characters, and Contains one capital letter, one spacial symbol, one small letter and numbers')
