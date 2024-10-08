@@ -191,11 +191,15 @@ const emailOTPSent = async(req,res) =>{
 }
 const emailOTPVerify = async(req,res) =>{
     try {
-        const id = req.userID;
-        console.log(id);
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(500).json({
+                success:false,
+                errors:errors.array()
+            })
+        }
         const {email, otp} = req.body;
         const savedOTP = await getSavedOTPFromDB(email);
-        console.log(savedOTP);
         if(savedOTP == null){
             return res.status(400).json({
                 success:false,
@@ -205,7 +209,7 @@ const emailOTPVerify = async(req,res) =>{
         let OTPstatus = false;
         if(savedOTP == otp){
             await markOTPAsUsed(email);
-            await saveEmail(id,email);
+            // await saveEmail(id,email);
             OTPstatus = true;
         }
         const statusValue = (OTPstatus) ? 200 : 400;

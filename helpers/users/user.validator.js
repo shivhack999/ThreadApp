@@ -1,6 +1,9 @@
 const {check} = require('express-validator');
 exports.userEmailSent = [
-    check("email","Enter the Email ID").not().isEmpty(),
+    // check("email","Enter the Email ID").not().isEmpty(),
+    check("email", "Enter the valid Email ID").isEmail().not().isEmpty()
+]
+exports.emailOTPVerify = [
     check("email", "Enter the valid Email ID").isEmail()
 ]
 exports.userLogin = [
