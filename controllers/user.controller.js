@@ -149,7 +149,7 @@ const emailOTPSent = async(req,res) =>{
         if(!email){
             return res.status(400).json({
                 success:false,
-                response:"fkjhsdfkj"
+                response:"Enter the valid email!"
             })
         }
         const Exist_Email = await Users.findOne({email:email, e_verify:true});
