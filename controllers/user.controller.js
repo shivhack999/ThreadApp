@@ -156,7 +156,6 @@ const login = async(req,res) =>{
             response:"User Login Successfully",
             userData:responseUserData,
             tokenType: 'Bearer',
-            accessToken:accessToken,
             refreshToken:refreshToken
         })
     } catch (error) {
@@ -218,7 +217,6 @@ const register = async(req,res) =>{
             response:"User registered successfully",
             userData:responseUserData,
             tokenType: 'Bearer',
-            accessToken:accessToken,
             refreshToken:refreshToken
 
         })
