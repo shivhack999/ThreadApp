@@ -15,133 +15,6 @@ const sendMobileOTP = require('../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../utils/mobiles/saveMobileOTPToDB.util');
 const getSavedMobileOTPFromDB = require('../utils/mobiles/getSavedOTPFromDB.util');
 
-const login = async(req,res) =>{
-    try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return res.status(500).json({
-                success:false,
-                errors:errors.array()
-            })
-        }
-        const {email, password} = req.body;
-
-        const userData = await Users.findOne({email}).exec();
-        console.log(userData)
-        if(!userData){
-            return res.status(400).json({
-                success:false,
-                response:"Email id not register?" 
-            });
-        }
-        const passwordMatch = await bcrypt.compare(password, userData.password);
-        if (!passwordMatch) {
-            return res.status(400).json({ 
-                success:false,
-                response: 'Email id and password is Incorrect!'
-            });
-        }
-        if(userData.active === false){
-            return res.status(400).json({ 
-                success:false,
-                response: 'Your account is temporary blocked please connect with customer care.'
-            });
-        }
-        const accessToken = await generateAccessToken({userData:userData});
-        const refreshToken = await generateRefreshToken({userData:userData._id});
-        await Users.findByIdAndUpdate(
-            userData._id,
-            {$set:{refreshToken:refreshToken}},
-            {new:true}
-        ) 
-        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
-        const option ={
-            httpOnly:true,
-            secure:true,
-            sameSite:'strict'
-        }
-        return res.status(200)
-        .cookie("accessToken", accessToken, option)
-        .cookie("refreshToken", refreshToken, option)
-        .json({
-            success:true,
-            response:"User Login Successfully",
-            userData:responseUserData,
-            tokenType: 'Bearer',
-            accessToken:accessToken,
-            refreshToken:refreshToken
-        })
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({
-            success:false,
-            response:error.msg 
-        })
-    }
-}
-const register = async(req,res) =>{
-    try {
-        console.log("Registration Data Received", req.body)
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return res.status(500).json({
-                success:false,
-                errors:errors.array()
-            })
-        }
-        const {fullName, mobile, email, gender, password} = req.body;
-        const preUser = await Users.findOne({
-            $or:[
-                {email:email},
-                {mobile:mobile}
-            ]
-        });
-        // console.log(preUser)
-        if(preUser){
-            return res.status(400).json({
-                success:false,
-                response:"User already register !" 
-            })
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        // console.log(hashedPassword)
-        const newUser = new Users({
-            fullName, mobile, password:hashedPassword, gender, e_verify:true
-        });
-        const userData = await newUser.save();
-        const accessToken = await generateAccessToken({userData:userData});
-        const refreshToken = await generateRefreshToken({userData:userData._id});
-        await Users.findByIdAndUpdate(
-            userData._id,
-            {$set:{refreshToken:refreshToken}},
-            {new:true}
-        ) 
-        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
-        const option ={
-            httpOnly:true,
-            secure:true,
-            sameSite:'strict'
-        }
-        return res.status(200)
-        .cookie("accessToken", accessToken, option)
-        .cookie("refreshToken", refreshToken, option)
-        .json({
-            success:true,
-            response:"User registered successfully",
-            userData:responseUserData,
-            tokenType: 'Bearer',
-            accessToken:accessToken,
-            refreshToken:refreshToken
-
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success:false,
-            response:error
-        })
-    }
-}
 const emailOTPSent = async(req,res) =>{
     try {
         const errors = validationResult(req);
@@ -230,10 +103,155 @@ const emailOTPVerify = async(req,res) =>{
         })
     }
 }
+const login = async(req,res) =>{
+    try {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(500).json({
+                success:false,
+                errors:errors.array()
+            })
+        }
+        const {email, password} = req.body;
+
+        const userData = await Users.findOne({email}).exec();
+        // console.log(userData)
+        if(!userData){
+            return res.status(400).json({
+                success:false,
+                response:"Email id not register?" 
+            });
+        }
+        const passwordMatch = await bcrypt.compare(password, userData.password);
+        if (!passwordMatch) {
+            return res.status(400).json({ 
+                success:false,
+                response: 'Email id and password is Incorrect!'
+            });
+        }
+        if(userData.active === false){
+            return res.status(400).json({ 
+                success:false,
+                response: 'Your account is temporary blocked please connect with customer care.'
+            });
+        }
+        const accessToken = await generateAccessToken({userData:userData});
+        const refreshToken = await generateRefreshToken({userData:userData._id});
+        await Users.findByIdAndUpdate(
+            userData._id,
+            {$set:{refreshToken:refreshToken}},
+            {new:true}
+        ) 
+        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
+        const option ={
+            httpOnly:true,
+            secure:true,
+            sameSite:'strict'
+        }
+        return res.status(200)
+        .cookie("accessToken", accessToken, option)
+        .cookie("refreshToken", refreshToken, option)
+        .json({
+            success:true,
+            response:"User Login Successfully",
+            userData:responseUserData,
+            tokenType: 'Bearer',
+            accessToken:accessToken,
+            refreshToken:refreshToken
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success:false,
+            response:error.msg 
+        })
+    }
+}
+const register = async(req,res) =>{
+    try {
+        // console.log("Registration Data Received", req.body)
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(500).json({
+                success:false,
+                errors:errors.array()
+            })
+        }
+        const {fullName, mobile, email, gender, password} = req.body;
+        const existEmail = await Users.findOne({email});
+        if(existEmail){
+            return res.status(400).json({
+                success:false,
+                response:"Email are already register!" 
+            })
+        }
+        const existMobile = await Users.findOne({mobile});
+        if(existMobile){
+            return res.status(400).json({
+                success:false,
+                response:"Mobile number are already register!" 
+            })
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new Users({
+            fullName, mobile, password:hashedPassword, gender, e_verify:true
+        });
+        const userData = await newUser.save();
+        const accessToken = await generateAccessToken({userData:userData});
+        const refreshToken = await generateRefreshToken({userData:userData._id});
+        await Users.findByIdAndUpdate(
+            userData._id,
+            {$set:{refreshToken:refreshToken}},
+            {new:true}
+        ) 
+        const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
+        const option ={
+            httpOnly:true,
+            secure:true,
+            sameSite:'strict'
+        }
+        return res.status(200)
+        .cookie("accessToken", accessToken, option)
+        .cookie("refreshToken", refreshToken, option)
+        .json({
+            success:true,
+            response:"User registered successfully",
+            userData:responseUserData,
+            tokenType: 'Bearer',
+            accessToken:accessToken,
+            refreshToken:refreshToken
+
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
 
 const logout = async(req,res) =>{
     try {
-        
+        const userID = req.userID;
+        const responseData = await Users.findByIdAndUpdate(
+            userID,
+            {$set:{refreshToken:null}},
+            {new:true}
+        )
+        if(responseData){
+            return res.status(200)
+            .clearCookie('accessToken')
+            .clearCookie('refreshToken')
+            .json({
+                success:true,
+                response:"User logout successfully"
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            response:"Something is wrong please try again"
+        })
     } catch (error) {
         return res.status(400).json({
             success:false,
