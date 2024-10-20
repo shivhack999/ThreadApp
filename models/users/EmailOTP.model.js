@@ -23,5 +23,5 @@ const otpSchema = new mongoose.Schema({
 });
 
 // Create and export the OTP model
-const Otp = mongoose.model('EmailOTP', otpSchema);
-module.exports = Otp;
+const EmailOTP = mongoose.model('EmailOTP', otpSchema);
+module.exports = EmailOTP;

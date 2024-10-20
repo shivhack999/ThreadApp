@@ -1,4 +1,4 @@
-const mobileOTP =require('../../models/mobileOTP.model')
+const mobileOTP =require('../../models/users/mobileOTP.model')
 const saveMobileOTPToDB = async(mobile, otp)=>{
     try {
         const now = new Date();

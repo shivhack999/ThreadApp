@@ -1,4 +1,4 @@
-const Users = require('../../models/user.model');
+const Users = require('../../models/users/user.model');
 const saveEmail = async(id,email) =>{
     // console.log(id,email);
     await Users.findByIdAndUpdate(

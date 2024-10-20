@@ -1,4 +1,4 @@
-const EmailOTP = require('../../models/EmailOTP.model');
+const EmailOTP = require('../../models/users/EmailOTP.model');
 
 const getOTP = async(email) =>{
     const otpRecord = await EmailOTP.findOne({ email, used: false });

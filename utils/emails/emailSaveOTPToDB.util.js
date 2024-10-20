@@ -1,4 +1,4 @@
-const EmailOTP =require('../../models/EmailOTP.model')
+const EmailOTP =require('../../models/users/EmailOTP.model')
 const saveOTPToDB = async(email, otp)=>{
     try {
         const now = new Date();

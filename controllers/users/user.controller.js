@@ -1,19 +1,20 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const Users = require('../models/user.model');
-const EmailOTP = require('../models/EmailOTP.model');
-const EmailSaveToDB = require('../utils/emails/emailSaveOTPToDB.util');
-const markOTPAsUsed = require('../utils/emails/markOTPAsUsed.util');
-const saveEmail = require('../utils/emails/saveEmailToDB.util');
-const getSavedOTPFromDB = require('../utils/emails/getSavedOTPFromDB.util')
 const {validationResult} = require('express-validator');
-const generateAccessToken = require('../helpers/Common/token/accessToken');
-const generateRefreshToken = require('../helpers/Common/token/refreshToken');
-const generateOTP = require('../helpers/common/generateOTP');
-const sendMail = require('../helpers/Common/mailer');
-const sendMobileOTP = require('../utils/mobiles/sentMobileOTP.util');
-const saveMobileOTPToDB = require('../utils/mobiles/saveMobileOTPToDB.util');
-const getSavedMobileOTPFromDB = require('../utils/mobiles/getSavedOTPFromDB.util');
+const Users = require('../../models/users/user.model');
+// const EmailOTP = require('../../models/users/EmailOTP.model');
+const EmailOTP = require('../../models/users/EmailOTP.model')
+const EmailSaveToDB = require('../../utils/emails/emailSaveOTPToDB.util');
+const markOTPAsUsed = require('../../utils/emails/markOTPAsUsed.util');
+const saveEmail = require('../../utils/emails/saveEmailToDB.util');
+const getSavedOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util')
+const generateAccessToken = require('../../helpers/Common/token/accessToken');
+const generateRefreshToken = require('../../helpers/Common/token/refreshToken');
+const generateOTP = require('../../helpers/common/generateOTP');
+const sendMail = require('../../helpers/Common/mailer');
+const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
+const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
+const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
     try {
@@ -193,7 +194,7 @@ const register = async(req,res) =>{
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new Users({
-            fullName, mobile, password:hashedPassword, gender, e_verify:true
+            fullName, mobile, email, password:hashedPassword, gender, e_verify:true
         });
         const userData = await newUser.save();
         const accessToken = await generateAccessToken({userData:userData});
