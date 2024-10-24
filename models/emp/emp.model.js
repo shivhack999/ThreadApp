@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const userSchema = mongoose.Schema({
-    Name:{
+const employeeSchema = mongoose.Schema({
+    name:{
         type:String,
         required:true,
         minlength: 3,
@@ -28,12 +28,12 @@ const userSchema = mongoose.Schema({
         type:Date,
         required:true
     },
-    department:{
+    departmentID:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Department',
         required:true
     },
-    role:{
+    roleId:{
         type:Number,
         required:true
     },
@@ -55,5 +55,5 @@ const userSchema = mongoose.Schema({
         default:true
     }
 });
-const user = mongoose.model("Users", userSchema);
+const user = mongoose.model("Users", employeeSchema);
 module.exports = user;
