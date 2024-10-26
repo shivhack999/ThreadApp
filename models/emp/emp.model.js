@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const employeeSchema = mongoose.Schema({
+const empSchema = mongoose.Schema({
     name:{
         type:String,
         required:true,
@@ -16,6 +16,7 @@ const employeeSchema = mongoose.Schema({
     email:{
         type:String,
         minlength: 5,
+        unique:true,
         maxlength: 255
     },
     gender:{
@@ -24,18 +25,18 @@ const employeeSchema = mongoose.Schema({
         minlength: 4,
         maxlength: 6
     },
-    joiningDate:{
+    hire_date:{
         type:Date,
         required:true
     },
-    departmentID:{
+    department:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Department',
         required:true
     },
-    roleId:{
-        type:Number,
-        required:true
+    roles:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:'Role'
     },
     password:{
         type:String,
@@ -55,5 +56,5 @@ const employeeSchema = mongoose.Schema({
         default:true
     }
 });
-const user = mongoose.model("Users", employeeSchema);
-module.exports = user;
+const Employee = mongoose.model("Employee", empSchema);
+module.exports = Employee;
