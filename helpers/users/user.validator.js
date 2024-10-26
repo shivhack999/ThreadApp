@@ -34,3 +34,15 @@ exports.userRegister = [
         minNumbers:1
     }),
 ]
+
+exports.userResetPassword = [
+    check('oldPassword','Password must be greater then 8 Characters.').not().isEmpty(),
+    check('newPassword','Password must be greater then 8 Characters, and Contains one capital letter, one spacial symbol, one small letter and numbers')
+    .isStrongPassword({
+        minLength:8,
+        minLowercase:1,
+        minUppercase:1,
+        minSymbols:1,
+        minNumbers:1
+    }),
+]

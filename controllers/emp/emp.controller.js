@@ -1,10 +1,83 @@
 const {validationResult} = require('express-validator');
+const bcrypt = require("bcrypt");
 const Employee = require('../../models/emp/emp.model');
 const Role = require('../../models/emp/role.model');
 const Permission = require('../../models/emp/permission.model');
+const Department = require('../../models/emp/department.model');
 const comparePassword = require('../../helpers/Common/password/comparePassword');
 const generatePassword = require('../../helpers/Common/password/generatePassword');
+const generateAccessToken = require('../../helpers/Common/token/accessToken');
+const generateRefreshToken = require('../../helpers/Common/token/refreshToken');
 
+
+
+
+const addDepartment = async(req,res)=>{
+    try {
+        const departments = Array.isArray(req.body) ? req.body : [req.body];
+
+        // Collect all department names from the request body
+        const departmentNames = departments.map(dept => dept.department_name);
+    
+        // Find if any of these departments already exist
+        const existingDepartments = await Department.find({
+          department_name: { $in: departmentNames }
+        });
+    
+        // Extract existing department names to compare
+        const existingNames = existingDepartments.map(dept => dept.department_name);
+    
+        // Filter out duplicate departments from the request
+        const newDepartments = departments.filter(
+          dept => !existingNames.includes(dept.department_name)
+        );
+    
+        // If no new departments, respond with a message
+        if (newDepartments.length === 0) {
+            return res.status(400).json({ 
+                success:false,
+                message: 'All departments already exist.' 
+            });
+        }
+    
+        // Insert the new departments into the database
+        const addedDepartments = await Department.insertMany(newDepartments);
+        res.status(201).json({ 
+            success:true,
+            message: 'Departments added successfully', 
+            addedDepartments 
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const showDepartment = async(req,res)=>{
+    try {
+        const filter = {};
+        if (req.query.department_name) {
+            filter.department_name = new RegExp(req.query.department_name, 'i'); // case-insensitive match
+        }
+        const departments = await Department.find(filter);
+        if(!departments){
+            return res.status(400).json({
+                success:true,
+                message:'No department found.'
+            });
+        }
+        return res.status(200).json({
+            success:true,
+            departments
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
 
 
 const addRole = async(req,res)=>{
@@ -18,8 +91,29 @@ const addRole = async(req,res)=>{
         });
         }
 
-    // Insert multiple roles
-    const newRoles = await Role.insertMany(roles);
+        const roleNames = roles.map(role => role.role_name);
+
+        // Check for existing roles in the database
+        const existingRoles = await Role.find({
+        role_name: { $in: roleNames }
+        });
+
+        // Extract names of existing roles
+        const existingRoleNames = existingRoles.map(role => role.role_name);
+
+        // Find out which roles are new (not already existing)
+        const checkDuplicate = roles.filter(role => !existingRoleNames.includes(role.role_name));
+
+        // If there are no new roles to insert, return a message
+        if (checkDuplicate.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'All roles already exist.',
+                existingRoles: existingRoleNames
+            });
+        }
+        // Insert multiple roles
+        const newRoles = await Role.insertMany(roles);
     res.status(201).json({ message: 'Roles added successfully', data: newRoles });
     } catch (error) {
         return res.status(400).json({
@@ -40,10 +134,14 @@ const showRole = async(req,res)=>{
         filter.description = { $regex: description, $options: 'i' }; // Case-insensitive search
         }
         const roles = await Role.find(filter); // Fetch roles based on filter
-
-        res.status(200).json({
-        message: 'Roles retrieved successfully',
-        response: roles
+        console.log(roles)
+        let roleStatus = true;
+        if(roles.length === 0) roleStatus = false;
+        const roleStatusValue = (roleStatus)? 200 : 400;
+        res.status(roleStatusValue).json({
+            success:roleStatus,
+            message: (roleStatus)? 'Roles retrieved successfully' : 'No data found!',
+            response: roles
         });
 
     } catch (error) {
@@ -285,6 +383,7 @@ const login =  async(req,res) =>{
             refreshToken:refreshToken
         })
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success:false,
             response:error
@@ -332,6 +431,7 @@ const register = async(req,res) =>{
             }
         })
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success:false,
             response:error
@@ -394,6 +494,9 @@ const logout = async(req,res) =>{
     }
 }
 module.exports = {
+    addDepartment,
+    showDepartment,
+
     addRole,
     showRole,
     updateRole,
