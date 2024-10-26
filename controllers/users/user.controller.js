@@ -179,6 +179,14 @@ const register = async(req,res) =>{
             })
         }
         const {fullName, mobile, email, gender, password} = req.body;
+        const emailVerify = await EmailOTP.findOne({email:email, used:true});
+        console.log(emailVerify)
+        if(!emailVerify){
+            return res.status(400).json({
+                success:false,
+                response:"Verify email first!" 
+            })
+        }
         const existEmail = await Users.findOne({email});
         if(existEmail){
             return res.status(400).json({
@@ -193,13 +201,7 @@ const register = async(req,res) =>{
                 response:"Mobile number are already register!" 
             })
         }
-        const emailVerify = await EmailOTP.find({email:email, used:true});
-        if(!emailVerify){
-            return res.status(400).json({
-                success:false,
-                response:"Verify email first!" 
-            })
-        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new Users({
             fullName, mobile, email, password:hashedPassword, gender, e_verify:true
