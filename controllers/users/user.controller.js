@@ -14,6 +14,8 @@ const generateOTP = require('../../helpers/common/generateOTP');
 const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
+const error_400 = require('../../utils/errors/error_400');
+const Address = require('../../models/users/Address.model');
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -180,7 +182,6 @@ const register = async(req,res) =>{
         }
         const {fullName, mobile, email, gender, password} = req.body;
         const emailVerify = await EmailOTP.findOne({email:email, used:true});
-        console.log(emailVerify)
         if(!emailVerify){
             return res.status(400).json({
                 success:false,
@@ -377,6 +378,64 @@ const resetPassword = async(req,res) =>{
     }
 }
 
+const userProfile = async(req,res) =>{
+    try {
+        const userID = req.userID;
+        const userData = await Users.findById(userID).select(" -active -create_At -refreshToken -password");
+        return res.status(userData ? 200 : 400).json({
+            success: userData? true : false,
+            user: userData ? userData : 'No data found!'
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error.msg
+        })
+    }
+}
+
+const userProfileUpdate = async(req,res) =>{
+    try {
+        const userID = req.userID;
+        const userData = await Users.findById(userID);
+        if(!userData){
+            return res.status(400).json({
+                success:false,
+                response:'Something is wrong please login first !'
+            })
+        }
+        if(userData.active === false){
+            return res.status(400).json({
+                success:false,
+                response:'Your account is temporary block please connect with customer care.'
+            })
+        }
+        const updateField = req.body;
+
+        const updatedUser = await Users.findByIdAndUpdate(userID,{ $set:{updateField}}, {new:true});
+        return res.status(updatedUser ? 200 :400).json({
+            success: updatedUser ? true : false,
+            response:updatedUser ? 'Successfully profile Update.' : 'Something is missing please try again!'
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error.msg
+        })
+    }
+}
+const addressAdd = async(req,res) =>{
+    try {
+        const userID = req.userID;
+        const {full_name, phone_number, pin_code, state, city, house_No_Or_building_No, area} = req.body;
+        const addressData = {user:userID, ...req.body}
+
+        const newAddress = new Address({ addressData });
+        
+    } catch (error) {
+        error_400(error.msg);  // check it 
+    }
+}
 
 module.exports={
     login,
@@ -388,4 +447,8 @@ module.exports={
     logout,
     mobileOTPSent,
     mobileOTPVerify,
+    userProfile,
+    userProfileUpdate,
+    addressAdd,
+
 }

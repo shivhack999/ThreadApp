@@ -10,6 +10,8 @@ router.post("/emailOTPSent",userEmailSent, userController.emailOTPSent); // comp
 router.post("/emailOTPVerify", emailOTPVerify, userController.emailOTPVerify); // completed 0.1
 router.post("/resetPassword", userMiddleware, userResetPassword, userController.resetPassword); // completed 0.1
 router.get("/logout", userMiddleware, userController.logout); // completed 0.1
+router.get("/userProfile", userMiddleware, userController.userProfile); // completed 0.1
+router.put("/userProfileUpdate", userMiddleware , userController.userProfileUpdate);
 router.post("/mobileOTPSent", userController.mobileOTPSent); // under Precess 
 
 module.exports = router;
