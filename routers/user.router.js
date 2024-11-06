@@ -11,7 +11,11 @@ router.post("/emailOTPVerify", emailOTPVerify, userController.emailOTPVerify); /
 router.post("/resetPassword", userMiddleware, userResetPassword, userController.resetPassword); // completed 0.1
 router.get("/logout", userMiddleware, userController.logout); // completed 0.1
 router.get("/userProfile", userMiddleware, userController.userProfile); // completed 0.1
-router.put("/userProfileUpdate", userMiddleware , userController.userProfileUpdate);
+router.put("/userProfileUpdate", userMiddleware , userController.userProfileUpdate); // completed 0.1
+router.post("/addressAdd", userMiddleware, userController.addressAdd); // completed 0.1
+router.get("/addressDelete", userMiddleware, userController.addressDelete); // completed 0.1
+router.put("/addressUpdate", userMiddleware, userController.addressUpdate); // completed 0.1
+router.get("/addressShow", userMiddleware, userController.addressShow); // completed 0.1
 router.post("/mobileOTPSent", userController.mobileOTPSent); // under Precess 
 
 module.exports = router;
