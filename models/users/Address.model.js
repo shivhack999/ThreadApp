@@ -1,4 +1,3 @@
-const express = require('express')
 const mongoose = require('mongoose')
  
 const addressSchema = mongoose.Schema({
@@ -38,7 +37,6 @@ const addressSchema = mongoose.Schema({
         type:Date,
         default:Date.now()
     }
-
 });
 
 const Address = mongoose.model('Address',addressSchema);

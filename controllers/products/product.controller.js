@@ -1,3 +1,4 @@
+const Product = require('../../models/product/product.model');
 const addProduct = async(req,res) =>{
     const {
         product_name,
@@ -97,9 +98,16 @@ const showProduct = async(req,res)=>{
         })
     }
 }
-const uploadProduct = async(req,res) =>{
+const productDetails = async(req,res) =>{
     try {
-        
+
+        const ProductId = req.query['productId'];
+        const productData = await Product.findById(ProductId);
+        return res.status(200).json({
+            success:true,
+            product: productData ? productData : 'product not found'
+        });
+
     } catch (error) {
         return res.status(400).json({
             success:false,
@@ -113,5 +121,5 @@ const uploadProduct = async(req,res) =>{
 module.exports = {
     addProduct,
     showProduct,
-    uploadProduct
+    productDetails,
 }

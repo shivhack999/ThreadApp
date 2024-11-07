@@ -14,7 +14,7 @@ const generateOTP = require('../../helpers/common/generateOTP');
 const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
-// const error_400 = require('../../utils/errors/error_400');
+const error_400 = require('../../utils/errors/error_400');
 const Address = require('../../models/users/Address.model');
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
@@ -396,8 +396,8 @@ const userProfile = async(req,res) =>{
 
 const userProfileUpdate = async(req,res) =>{
     try {
-        const userID = req.userID;
-        const userData = await Users.findById(userID);
+        const userId = req.userID;
+        const userData = await Users.findById(userId);
         if(!userData){
             return res.status(400).json({
                 success:false,
@@ -412,7 +412,7 @@ const userProfileUpdate = async(req,res) =>{
         }
         const updateField = req.body;
 
-        const updatedUser = await Users.findByIdAndUpdate(userID,{ $set:{updateField}}, {new:true});
+        const updatedUser = await Users.findByIdAndUpdate(userId,{ $set:{updateField}}, {new:true});
         return res.status(updatedUser ? 200 :400).json({
             success: updatedUser ? true : false,
             response:updatedUser ? 'Successfully profile Update.' : 'Something is missing please try again!'
@@ -426,17 +426,105 @@ const userProfileUpdate = async(req,res) =>{
 }
 const addressAdd = async(req,res) =>{
     try {
-        const userID = req.userID;
-        const {full_name, phone_number, pin_code, state, city, house_No_Or_building_No, area} = req.body;
-        const addressData = {user:userID, ...req.body}
-
-        const newAddress = new Address({ addressData });
-        
+        const userId = req.userID;
+        const addressData = {user:userId, ...req.body};
+        const newAddress = new Address(addressData);
+        console.log(newAddress);
+        const address = await newAddress.save();
+        return res.status(200).json({
+            success:true,
+            response:'Address added successfully',
+            address
+        })
     } catch (error) {
-        // error_400(error.msg);  // check it 
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
     }
 }
-
+const addressDelete = async(req,res) =>{
+    try {
+        const userId = req.userID;
+        const addressId = req.query['addressId'] || req.body.addressId || req.params['addressId'];
+        const address = await Address.findOneAndDelete({
+            user:userId,
+            _id:addressId
+        })
+        if(!address){
+            return res.status(400).json({
+                success:false,
+                response:'Address not found'
+            })
+        }
+        return res.status(200).json({
+            success:true,
+            response:'Address deleted successfully'
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const addressUpdate = async(req,res)=>{
+    try {
+        const userId = req.userID;
+        const {
+            addressId,
+            full_name,
+            phone_number,
+            pin_code,
+            state,
+            city,
+            house_No_Or_building_No,
+            area
+        } = req.body;
+        const updatedAddress = await Address.findOneAndUpdate(
+            {_id:addressId, user:userId},
+            {
+                full_name,
+                phone_number,
+                pin_code,
+                state,
+                city,
+                house_No_Or_building_No,
+                area
+            },
+            { new: true, runValidators: true } 
+        );
+        if (!updatedAddress) {
+            return res.status(400).json({
+                success:false,
+                response:'Address not found'
+            })
+        }
+        return res.status(200).json({
+            success:true,
+            response:'Address updated successfully',
+            updatedAddress
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const addressShow = async(req,res) =>{
+    try {
+        const userId = req.userID;
+        const address = await Address.find({user:userId}).select("-__v -create_At -user");
+        return res.status(200).json({
+            success:true,
+            address
+        })
+    } catch (error) {
+        error_400(error.msg);  // check it 
+    }
+}
 module.exports={
     login,
     register,
@@ -450,5 +538,7 @@ module.exports={
     userProfile,
     userProfileUpdate,
     addressAdd,
-
+    addressDelete,
+    addressUpdate,
+    addressShow,
 }
