@@ -5,10 +5,11 @@ const fs = require('fs');
 
 // Function to create a dynamic multer storage configuration
 const getMulterStorage = (uploadPath) => {
+  let fullPath;
   return multer.diskStorage({
     destination: (req, file, cb) => {
-      const fullPath = path.join(__dirname, '../uploads', uploadPath);
-
+      fullPath = path.join(__dirname, '../uploads', uploadPath);
+      req.body.images = uploadPath + "/" +Date.now() + '-' + file.originalname;
       // Create directory if it doesn't exist
       fs.mkdirSync(fullPath, { recursive: true });
       cb(null, fullPath); // Use dynamic path for destination

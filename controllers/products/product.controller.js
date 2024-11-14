@@ -1,4 +1,7 @@
 const Product = require('../../models/product/product.model');
+const Category = require('../../models/product/category.model');
+const SubCategory = require('../../models/product/sub_category.model');
+const subCategory = require('../../models/product/sub_category.model');
 const addProduct = async(req,res) =>{
     const {
         product_name,
@@ -46,7 +49,7 @@ const addProduct = async(req,res) =>{
   
         // Save product to the database
         await newProduct.save();
-  
+
         res.status(201).json({ message: 'Product added successfully', product: newProduct })
     } catch (error) {
         return res.status(400).json({
@@ -116,10 +119,105 @@ const productDetails = async(req,res) =>{
     }
 }
 
+const addCategory = async(req,res) =>{
+    try {
+        const { category_name, images } = req.body;
+        console.log(req.body)
 
+    if (!category_name || !images) {
+        return res.status(400).json({ error: 'Both category_name and image are required' });
+    }
+    const category = new Category({
+        category_name,
+        images
+    });
 
+    // Save the category to the database
+    const categoryResponse = await category.save();
+    if(categoryResponse){
+        res.status(201).json({success:true, response: 'Category created successfully', category });
+    }
+    res.status(400).json({ success:false,response:"Something is missing please connect with developer."})
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const showCategory = async(req,res) =>{
+    try {
+        const root = `${req.protocol}://${req.get('host')}/uploads`;
+        const categories = await Category.find().exec();
+        const categoriesWithFullImagePath = categories?.map(category => ({
+            ...category._doc,
+            images: `${root}${category.images}`,
+        }));
+        res.status(200).json({
+            success:true,
+            categories:(categoriesWithFullImagePath)? categoriesWithFullImagePath : null
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const addSubCategory = async(req,res) =>{
+    try {
+        const {categoryId,sub_category_name,images} = req.body;
+
+        const new_sub_category = new SubCategory({
+            categoryId,sub_category_name,images
+        });
+        let sub_category_response = await new_sub_category.save();
+        if(sub_category_response){
+            return res.status(200).json({
+                success:true,
+                response:'Sub Category created successfully',
+                response:sub_category_response
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            response:"Something is wrong please connect with develop team."
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+
+const showSubCategory = async(req,res) =>{
+    try {
+        const root = `${req.protocol}://${req.get('host')}/uploads`;
+        const sub_categories = await SubCategory.find().select("-__v -create_At").exec();
+        const subCategoriesWithFullImagePath = sub_categories?.map(SubCategory => ({
+            ...SubCategory._doc,
+            images: `${root}${SubCategory.images}`,
+        }));
+        res.status(200).json({
+            success:true,
+            response:(subCategoriesWithFullImagePath)? subCategoriesWithFullImagePath : null
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
     productDetails,
+    addCategory,
+    showCategory,
+    addSubCategory,
+    showSubCategory
+    
 }

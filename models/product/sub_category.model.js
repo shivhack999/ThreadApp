@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 
 const subCategorySchema = mongoose.Schema({
-    categoryID:{
+    categoryId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category',
         required:true
@@ -10,13 +10,13 @@ const subCategorySchema = mongoose.Schema({
         type:String,
         required:true
     },
-    image:{
+    images:{
         type:String,
         required:true
     },
     create_At:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     }
 })
 
