@@ -11,9 +11,13 @@ const cartSchema = new mongoose.Schema({
         require:true,
         ref:'Product'
     },
+    sell_price:{
+        type:Number,
+        required:true
+    },
     created_At: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
 });
 

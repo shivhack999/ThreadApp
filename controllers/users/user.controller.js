@@ -400,7 +400,7 @@ const userProfileUpdate = async(req,res) =>{
         if(!userData){
             return res.status(400).json({
                 success:false,
-                response:'Something is wrong please login first !'
+                response:'Something is wrong please login first!'
             })
         }
         if(userData.active === false){
@@ -521,10 +521,7 @@ const addressShow = async(req,res) =>{
             address
         })
     } catch (error) {
-        return res.status(400).json({
-            success:false,
-            response:error
-        })
+        error_400(error.msg);  // check it 
     }
 }
 module.exports={

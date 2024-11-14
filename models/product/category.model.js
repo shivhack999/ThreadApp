@@ -5,13 +5,13 @@ const categorySchema = mongoose.Schema({
         type:String,
         required:true
     },
-    image:{
+    images:{
         type:String,
         required:true
     },
     create_At:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     }
 })
 

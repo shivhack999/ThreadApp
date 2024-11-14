@@ -10,8 +10,6 @@ const generateAccessToken = require('../../helpers/Common/token/accessToken');
 const generateRefreshToken = require('../../helpers/Common/token/refreshToken');
 
 
-
-
 const addDepartment = async(req,res)=>{
     try {
         const departments = Array.isArray(req.body) ? req.body : [req.body];
