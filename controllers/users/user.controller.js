@@ -14,6 +14,7 @@ const generateOTP = require('../../helpers/common/generateOTP');
 const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
+const error_400 = require('../../utils/errors/error_400');
 const Address = require('../../models/users/Address.model');
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
@@ -400,7 +401,7 @@ const userProfileUpdate = async(req,res) =>{
         if(!userData){
             return res.status(400).json({
                 success:false,
-                response:'Something is wrong please login first !'
+                response:'Something is wrong please login first!'
             })
         }
         if(userData.active === false){
@@ -521,10 +522,7 @@ const addressShow = async(req,res) =>{
             address
         })
     } catch (error) {
-        return res.status(400).json({
-            success:false,
-            response:error
-        })
+        error_400(error.msg);  // check it 
     }
 }
 module.exports={
