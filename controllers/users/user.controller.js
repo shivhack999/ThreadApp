@@ -14,7 +14,6 @@ const generateOTP = require('../../helpers/common/generateOTP');
 const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
-const error_400 = require('../../utils/errors/error_400');
 const Address = require('../../models/users/Address.model');
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
