@@ -2,6 +2,7 @@ const Product = require('../../models/product/product.model');
 const Category = require('../../models/product/category.model');
 const SubCategory = require('../../models/product/sub_category.model');
 const subCategory = require('../../models/product/sub_category.model');
+const SubSubCategory = require('../../models/product/sub_sub_category');
 const addProduct = async(req,res) =>{
     const {
         product_name,
@@ -139,6 +140,7 @@ const addCategory = async(req,res) =>{
     }
     res.status(400).json({ success:false,response:"Something is missing please connect with developer."})
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success:false,
             response:error
@@ -196,14 +198,50 @@ const showSubCategory = async(req,res) =>{
     try {
         const root = `${req.protocol}://${req.get('host')}/uploads`;
         const sub_categories = await SubCategory.find().select("-__v -create_At").exec();
-        const subCategoriesWithFullImagePath = sub_categories?.map(SubCategory => ({
-            ...SubCategory._doc,
-            images: `${root}${SubCategory.images}`,
-        }));
         res.status(200).json({
             success:true,
-            response:(subCategoriesWithFullImagePath)? subCategoriesWithFullImagePath : null
+            root:root,
+            response:(sub_categories)? sub_categories : null
         });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+
+const addSubSubCategory = async(req,res)=>{
+    try {
+        const {subCategoryId,sub_sub_category_name, images} = req.body;
+        const newSSC = new SubSubCategory({
+            subCategoryId,sub_sub_category_name, images
+        });
+        const newSSCresponse = await newSSC.save();
+        if(newSSCresponse){
+            return res.status(200).json({
+                success:true,
+                response:newSSC
+            })
+        }
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
+const showSubSubCategory = async(req,res) =>{
+    try {
+        const listOfSSC = await SubSubCategory.find().exec();
+        let status = (listOfSSC) ? 200 :400;
+        const root = `${req.protocol}://${req.get('host')}/uploads`;
+        console.log(root)
+        return res.status(status).json({
+            success:(status == 200) ? true :false,
+            root:root,
+            response: (listOfSSC) ? listOfSSC : 'No Data found.'
+        })
     } catch (error) {
         return res.status(400).json({
             success:false,
@@ -218,6 +256,8 @@ module.exports = {
     addCategory,
     showCategory,
     addSubCategory,
-    showSubCategory
+    showSubCategory,
+    addSubSubCategory,
+    showSubSubCategory
     
 }
