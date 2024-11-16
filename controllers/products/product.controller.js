@@ -236,7 +236,6 @@ const showSubSubCategory = async(req,res) =>{
         const listOfSSC = await SubSubCategory.find().exec();
         let status = (listOfSSC) ? 200 :400;
         const root = `${req.protocol}://${req.get('host')}/uploads`;
-        console.log(root)
         return res.status(status).json({
             success:(status == 200) ? true :false,
             root:root,
