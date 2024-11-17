@@ -15,6 +15,7 @@ const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
 const Address = require('../../models/users/Address.model');
+const userFindById = require("../../helpers/users/userFindById");
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -524,6 +525,57 @@ const addressShow = async(req,res) =>{
         error_400(error.msg);  // check it 
     }
 }
+
+const verifyToken = async(req,res) =>{
+    try {
+        const userId = req.userID;
+        let select = "refreshToken active"
+        let userData = await userFindById(userId,select);
+        if(userData.refreshToken == null){
+            return res.status(400).json({
+                success:false,
+                response:"Login again."
+            })
+        }
+        if(userData.active === false){
+            return res.status(400).json({ 
+                success:false,
+                response: 'Your account is temporary blocked please connect with customer care.'
+            });
+        }
+        select = "-password -create_At -refreshToken -__v";
+        userData = await userFindById(userId, select);
+        const accessToken = await generateAccessToken({userData:userData});
+        const refreshToken = await generateRefreshToken({userData:userData._id});
+        await Users.findByIdAndUpdate(
+            userData._id,
+            {$set:{refreshToken:refreshToken}},
+            {new:true}
+        )
+        const option ={
+            httpOnly:true,
+            secure:true,
+            sameSite:'strict'
+        }
+        return res.status(200)
+        .cookie("accessToken", accessToken, option)
+        .cookie("refreshToken", refreshToken, option)
+        .json({
+            success:true,
+            response:"User Login Successfully",
+            userData:userData,
+            tokenType: 'Bearer',
+            refreshToken:refreshToken
+        })
+        // delete userData._id
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success:false,
+            msg:"something is wrong."
+        })
+    }
+}
 module.exports={
     login,
     register,
@@ -540,4 +592,5 @@ module.exports={
     addressDelete,
     addressUpdate,
     addressShow,
+    verifyToken,
 }

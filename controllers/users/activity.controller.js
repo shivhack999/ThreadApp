@@ -103,14 +103,15 @@ const productOrder = async(req,res) =>{
             // get user name and mobile for transaction
             
             const userData = await findById(userId);
-            console.log("lkkjg",userData);
             
             
             //add payment mechanism
-            const MUId = MUId + current_time;
+            const MUID = userId+ 'M' + current_time;
             const transactionId = userId +'T' + current_time;
             const name = userData.fullName;
             const mobile = userData.mobile;
+            // const amount =  * 100;
+
         }
         
         // const newOrder = new Order ({
