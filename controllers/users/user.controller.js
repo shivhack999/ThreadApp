@@ -15,6 +15,8 @@ const sendMail = require('../../helpers/Common/mailer');
 const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
 const Address = require('../../models/users/Address.model');
+const userFindOne = require("../../helpers/users/userFindOne");
+const { response } = require("express");
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -524,6 +526,28 @@ const addressShow = async(req,res) =>{
         error_400(error.msg);  // check it 
     }
 }
+const forgotPassword = async(req,res)=>{
+    try {
+        const email = req.body.email;
+        const select = "_id active";
+        const userData = await userFindOne("email",email,select);
+        if(userData.active === false){
+            return res.status(400).json({
+                success:false,
+                response:'Your account has been temporary blocked please connect with customer care.'
+            })
+        }
+
+        const userId = userData._id;
+        
+        
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:error
+        })
+    }
+}
 module.exports={
     login,
     register,
@@ -540,4 +564,5 @@ module.exports={
     addressDelete,
     addressUpdate,
     addressShow,
+    forgotPassword,
 }
