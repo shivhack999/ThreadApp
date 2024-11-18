@@ -12,6 +12,10 @@ const categorySchema = mongoose.Schema({
     create_At:{
         type:Date,
         default:Date.now
+    },
+    updated_At:{
+        type:Date,
+        default:Date.now
     }
 })
 

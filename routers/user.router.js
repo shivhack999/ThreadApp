@@ -15,6 +15,7 @@ router.post("/addressAdd", userMiddleware, userController.addressAdd); // comple
 router.get("/addressDelete", userMiddleware, userController.addressDelete); // completed 0.1
 router.put("/addressUpdate", userMiddleware, userController.addressUpdate); // completed 0.1
 router.get("/addressShow", userMiddleware, userController.addressShow); // completed 0.1
+router.get("/verifyToken", userMiddleware, userController.verifyToken);
 router.post("/mobileOTPSent", userController.mobileOTPSent); // under Precess 
 router.post("/forgotPassword", userController.forgotPassword);
 module.exports = router;

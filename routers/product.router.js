@@ -12,5 +12,7 @@ router.post("/addCategory", dynamicUpload("/products/category"), productControll
 router.get("/showCategory", productController.showCategory);
 router.post("/addSubCategory", dynamicUpload("/products/sub_category"), productController.addSubCategory);
 router.get("/showSubCategory", productController.showSubCategory);
-router.
+router.post("/addSubSubCategory", dynamicUpload("products/sub_sub_category"), productController.addSubSubCategory);
+router.get("/showSubSubCategory", productController.showSubSubCategory);
 module.exports = router;
+
