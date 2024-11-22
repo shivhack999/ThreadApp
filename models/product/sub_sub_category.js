@@ -10,16 +10,24 @@ const subSubCategorySchema = mongoose.Schema({
         type:String,
         required:true
     },
+    available:{
+        type:Boolean,
+        default:true
+    },
     images:{
         type:String
+    },
+    available:{
+        type:Boolean,
+        required:true,
+        default:true
     },
     create_At:{
         type:Date,
         default:Date.now
     },
     updated_At:{
-        type:Date,
-        default:Date.now
+        type:Date
     }
 })
 

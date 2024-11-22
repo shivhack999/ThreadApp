@@ -522,7 +522,10 @@ const addressShow = async(req,res) =>{
             address
         })
     } catch (error) {
-        error_400(error.msg);  // check it 
+        return res.status(400).json({
+            success:false,
+            msg:"something is wrong."
+        })
     }
 }
 
@@ -576,6 +579,16 @@ const verifyToken = async(req,res) =>{
         })
     }
 }
+const forgotPassword = async(req,res) =>{
+    try {
+        
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+
+        })
+    }
+}
 module.exports={
     login,
     register,
@@ -593,4 +606,5 @@ module.exports={
     addressUpdate,
     addressShow,
     verifyToken,
+    forgotPassword
 }
