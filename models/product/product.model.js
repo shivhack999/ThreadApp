@@ -80,11 +80,11 @@ const productSchema = mongoose.Schema({
     },
     create_At:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     },
     update_At:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     }
 })
 // Apply the AutoIncrement plugin to the serial_number field
