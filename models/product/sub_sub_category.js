@@ -28,8 +28,12 @@ const subSubCategorySchema = mongoose.Schema({
     },
     updated_At:{
         type:Date
+    },
+    searchCount:{
+        type:Number,
+        default:1
     }
-})
+});
 
 const subSubCategory = mongoose.model("SubSubCategory", subSubCategorySchema);
 

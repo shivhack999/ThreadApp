@@ -25,6 +25,10 @@ const subCategorySchema = mongoose.Schema({
     },
     updated_At:{
         type:Date
+    },
+    count:{
+        type:Number,
+        default:1
     }
 })
 
