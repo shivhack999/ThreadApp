@@ -248,6 +248,28 @@ const showSubSubCategory = async(req,res) =>{
         })
     }
 }
+const incrementSubSubProductSearchCount = async(req,res) =>{
+    try {
+        const { id } = req.params;
+        const updatedSubSubCategory = await SubSubCategory.findByIdAndUpdate(
+            id,
+            { $inc: { searchCount: 1 }, updated_At: Date.now() },
+            { new: true } // Return the updated document
+        );
+        if (!updatedSubSubCategory) {
+            return res.status(404).json({ success:false, response: 'SubSubCategory not found' });
+        }
+        res.status(200).json({
+            success:true,
+            response: 'Search count incremented successfully',
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:'Something is missing please try again!'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -257,6 +279,7 @@ module.exports = {
     addSubCategory,
     showSubCategory,
     addSubSubCategory,
-    showSubSubCategory
+    showSubSubCategory,
+    incrementSubSubProductSearchCount
     
 }

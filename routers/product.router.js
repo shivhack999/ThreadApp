@@ -12,7 +12,8 @@ router.post("/addCategory", dynamicUpload("/products/category"), productControll
 router.get("/showCategory", productController.showCategory);
 router.post("/addSubCategory", dynamicUpload("/products/sub_category"), productController.addSubCategory);
 router.get("/showSubCategory", productController.showSubCategory);
-router.post("/addSubSubCategory", dynamicUpload("products/sub_sub_category"), productController.addSubSubCategory);
+router.post("/addSubSubCategory", dynamicUpload("products/sub_sub_category"), productController.addSubSubCategory); //remove space in image name 
 router.get("/showSubSubCategory", productController.showSubSubCategory);
+router.put("/incrementSubSubProductSearchCount/:id", productController.incrementSubSubProductSearchCount);
 module.exports = router;
 

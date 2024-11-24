@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const productSchema = mongoose.Schema({
-    // serial_number: {
-    //     type: Number,
-    //     unique: true // Ensure that serial numbers are unique
-    // },
+    serial_number: {
+        type: Number,
+        unique: true // Ensure that serial numbers are unique
+    },
     title:{
         type:String,
         required:true,
