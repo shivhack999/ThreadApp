@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const subCategorySchema = mongoose.Schema({
+const subCategorySchema = new mongoose.Schema({
     categoryId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category',

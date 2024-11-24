@@ -335,7 +335,7 @@ const login =  async(req,res) =>{
             })
         }
         const {email, password} = req.body;
-
+        console.log(email,password)
         const employeeData = await Employee.findOne({email}).exec();
         // console.log(userData)
         if(!employeeData){

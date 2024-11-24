@@ -1,11 +1,6 @@
 const mongoose = require('mongoose')
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const productSchema = mongoose.Schema({
-    serial_number: {
-        type: Number,
-        unique: true // Ensure that serial numbers are unique
-    },
+const productSchema = new mongoose.Schema({
     title:{
         type:String,
         required:true,
@@ -14,25 +9,16 @@ const productSchema = mongoose.Schema({
         type:String,
         required:true,
     },
-    product_type:{
+    product_type:{  // sub_sub_categories = product_type
         type:mongoose.Schema.Types.String,
-        ref:'SubSubCategory',
+            ref:'SubSubCategory',
         required:true
     },
-    created_by:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Employee',
-        required:true
-    },
-    updated_by:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'EMployee'
-    },
-    published_at:{
+    published_At:{
         type:Date,
     },
     targetAudience:{
-        type: String,
+        type: [String],
         enum: ['male', 'female', 'children', 'unisex'],
         required: true
     },
@@ -41,6 +27,19 @@ const productSchema = mongoose.Schema({
         ref:'Brand',
         required:true
     },
+    tags:{
+        type:String, // "clothe, Sport, winter,"
+        required:true,
+    },
+    created_By:{ // hold ID of employee which is add product 
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Employee',
+        required:true
+    },
+    updated_By:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'EMployee'
+    },
     create_At:{
         type:Date,
         default:Date.now
@@ -48,59 +47,8 @@ const productSchema = mongoose.Schema({
     update_At:{
         type:Date
     },
-
-
-
-
-    quantity:{
-        type:Number,
-        required:true,
-        default:0
-    },
-    color:{
-        type:[String],
-        required:true
-    },
-    material:{
-        type:[String],
-        required:true
-    },
-
-    buy_price:{
-        type:Number,
-        required:true
-    },
-    sale_price:{
-        type:Number,
-        required:true
-    },
-    max_price:{
-        type:Number,
-        required:true
-    },
-    min_price:{
-        type:Number,
-        required:true
-    },
-    discount:{
-        type:Number,
-        default:0
-    },
-    description:{
-        type:String,
-        required:true
-    },
-    images:{
-        type:[String],
-        required:true
-    },
-    keywords:{
-        type:[String]
-    },
     
 })
-// Apply the AutoIncrement plugin to the serial_number field
-// productSchema.plugin(AutoIncrement, { inc_field: 'serial_number' });
 
 
 const product = mongoose.model("Product", productSchema);

@@ -3,9 +3,9 @@ const router = express.Router();
 const dynamicUpload =  require('../middleware/upload.middleware')
 const productController = require('../controllers/products/product.controller');
 const {productAdd} = require('../helpers/products/product.validation');
-
-
-router.post("/addProduct", productAdd, dynamicUpload("/products/t-shirt"), productController.addProduct);
+const empTokenVerify = require("../middleware/emp/emp.middleware");
+// dynamicUpload("/products/t-shirt")
+router.post("/addProduct", empTokenVerify, productAdd, productController.addProduct);
 router.get("/productDetails", productController.productDetails);
 router.get("/showProduct", productController.showProduct);
 router.post("/addCategory", dynamicUpload("/products/category"), productController.addCategory);

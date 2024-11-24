@@ -1,57 +1,44 @@
 const Product = require('../../models/product/product.model');
 const Category = require('../../models/product/category.model');
 const SubCategory = require('../../models/product/sub_category.model');
-const subCategory = require('../../models/product/sub_category.model');
 const SubSubCategory = require('../../models/product/sub_sub_category');
 const addProduct = async(req,res) =>{
     const {
-        product_name,
-        quantity,
-        category,
-        sub_category,
-        sub_sub_category,
-        brand,
-        color,
-        material,
+        title,
+        vendor,
+        product_type,
+        published_At,
         targetAudience,
-        buy_price,
-        sale_price,
-        max_price,
-        min_price,
-        discount,
-        description,
-        keywords,
+        brand,
+        tags,
       } = req.body;
   
       // Check for uploaded images and save their paths
-      const images = req.files ? req.files.map(file => file.path) : [];
+    //   const images = req.files ? req.files.map(file => file.path) : [];
 
       try {
         // Create a new Product instance
         const newProduct = new Product({
-          product_name,
-          quantity,
-          category,
-          sub_category,
-          sub_sub_category,
-          brand,
-          color,
-          material,
+          title,
+          vendor,
+          product_type,
+          published_At,
           targetAudience,
-          buy_price,
-          sale_price,
-          max_price,
-          min_price,
-          discount,
-          description,
-          images,
-          keywords
-        });
-  
-        // Save product to the database
-        await newProduct.save();
+          brand,
+          tags,
+          created_By:req.empId,
+          created_At:Date.now(),
 
-        res.status(201).json({ message: 'Product added successfully', product: newProduct })
+        });
+        // Save product to the database
+        const savedProduct = await newProduct.save();
+        if(savedProduct){
+            res.status(201).json({ 
+                success:true,
+                message: 'Product added successfully', 
+                product: savedProduct 
+            })
+        }
     } catch (error) {
         return res.status(400).json({
             success:false,
