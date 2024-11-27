@@ -23,7 +23,16 @@ app.use("/product", productRouter);
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
-
+app.get('/set-cookie', (req, res) => {
+    res.cookie('sessionId', 'abc123', {
+        domain: process.env.IP_ADDRESS, // Replace with your server's IP address
+        path: '/',
+        httpOnly: true,
+        secure: false, // Set to true if using HTTPS
+        sameSite: 'Lax', // Adjust based on your needs
+    });
+    res.send('Cookie has been set');
+  });
 const port = 8080;
 app.listen(port, () => {
     console.log(`server is running ${port}`);
