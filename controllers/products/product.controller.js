@@ -2,6 +2,7 @@ const Product = require('../../models/product/product.model');
 const Category = require('../../models/product/category.model');
 const SubCategory = require('../../models/product/sub_category.model');
 const SubSubCategory = require('../../models/product/sub_sub_category');
+const Variant = require('../../models/product/variant.model');
 const addProduct = async(req,res) =>{
     const {
         title,
@@ -15,7 +16,6 @@ const addProduct = async(req,res) =>{
   
       // Check for uploaded images and save their paths
     //   const images = req.files ? req.files.map(file => file.path) : [];
-
       try {
         // Create a new Product instance
         const newProduct = new Product({
@@ -27,7 +27,7 @@ const addProduct = async(req,res) =>{
           brand,
           tags,
           created_By:req.empId,
-          created_At:Date.now(),
+          created_At:Date.now,
 
         });
         // Save product to the database
@@ -48,40 +48,40 @@ const addProduct = async(req,res) =>{
 }
 const showProduct = async(req,res)=>{
     
-    const {product_name,category,sub_category,sub_sub_category,brand,min_price,max_price,color,material,targetAudience,discount,keywords} = req.query;
-    let filter = {};
-    if (product_name) filter.product_name = new RegExp(product_name, 'i');
-    if (category) filter.category = { $in: category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (sub_category) filter.sub_category = { $in: sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (sub_sub_category) filter.sub_sub_category = { $in: sub_sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (brand) filter.brand = { $in: brand.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (color) filter.color = { $in: color.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (material) filter.material = { $in: material.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (targetAudience) filter.targetAudience = { $in: targetAudience.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    if (keywords) filter.keywords = { $in: keywords.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    const {title,
+          vendor,
+          product_type,
+          published_At,
+          targetAudience,
+          brand,
+          tags,
+          created_By} = req.query;
+    // let filter = {};
+    // if (title) filter.title = new RegExp(title, 'i');
+    // if (category) filter.category = { $in: category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (sub_category) filter.sub_category = { $in: sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (sub_sub_category) filter.sub_sub_category = { $in: sub_sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (brand) filter.brand = { $in: brand.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (color) filter.color = { $in: color.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (material) filter.material = { $in: material.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (targetAudience) filter.targetAudience = { $in: targetAudience.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    // if (keywords) filter.keywords = { $in: keywords.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
 
-    // Filter by discount range, if specified
-    if (discount) filter.discount = { $gte: parseFloat(discount) };
+    // // Filter by discount range, if specified
+    // if (discount) filter.discount = { $gte: parseFloat(discount) };
 
-    // Filter by price range if specified
-    if (min_price || max_price) {
-      filter.sale_price = {};
-      if (min_price) filter.sale_price.$gte = parseFloat(min_price);
-      if (max_price) filter.sale_price.$lte = parseFloat(max_price);
-    }
+    // // Filter by price range if specified
+    // if (min_price || max_price) {
+    //   filter.sale_price = {};
+    //   if (min_price) filter.sale_price.$gte = parseFloat(min_price);
+    //   if (max_price) filter.sale_price.$lte = parseFloat(max_price);
+    // }
 
     try {
         // Fetch products based on filter
-    const products = await Product.find(filter);
+    const products = await Product.find();
 
-    // Map through products to include the image URL
-    const productsWithImagePath = products.map(product => ({
-      ...product.toObject(),
-      images: product.images.map(imgPath => `${req.protocol}://${req.get("host")}/uploads/products/t-shirt/${imgPath}`),
-
-    }));
-
-    res.status(200).json({ message: 'Products fetched successfully', products: productsWithImagePath });
+    res.status(200).json({ message: 'Products fetched successfully', products: products });
     } catch (error) {
         return res.status(400).json({
             success:false,
@@ -257,6 +257,63 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
         })
     }
 }
+const addVariant = async(req,res) =>{
+    try {
+        const empId = req.empId;
+        const {
+            productId,
+            title,
+            quantity,
+            color,
+            material,
+            buy_price,
+            sale_price,
+            max_price,
+            min_price,
+            discount,
+            description,
+            barcode,
+            taxable,
+            quantity_rule,
+        } = req.body;
+        const newVariant = new Variant({
+            productId,
+            title,
+            quantity,
+            color,
+            material,
+            buy_price,
+            sale_price,
+            max_price,
+            min_price,
+            discount,
+            description,
+            barcode,
+            taxable,
+            quantity_rule,
+            created_By : empId,
+            created_At:Date.now()
+        });
+        const savedVariant = await newVariant.save();
+        if(savedVariant){
+            return res.status(201).json({
+                success:true,
+                message:"Variant save successfully.",
+                variant:savedVariant                
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong please try again.'
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success:false,
+            response:'Something is wrong please connect with developer.'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -267,6 +324,7 @@ module.exports = {
     showSubCategory,
     addSubSubCategory,
     showSubSubCategory,
-    incrementSubSubProductSearchCount
+    incrementSubSubProductSearchCount,
+    addVariant,
     
 }

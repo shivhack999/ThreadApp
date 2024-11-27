@@ -81,24 +81,24 @@ const variantSchema = new mongoose.Schema({
         type:String,
         default:"INR"
     },
-    created_by:{
+    created_By:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Employee',
         required:true
     },
-    updated_by:{
+    updated_By:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'EMployee'
     },
-    create_At:{
+    created_At:{
         type:Date,
         default:Date.now
     },
-    update_At:{
+    updated_At:{
         type:Date
     },
 })
 // Apply the AutoIncrement plugin to the serial_number field
-productSchema.plugin(AutoIncrement, { inc_field: 'serial_number' });
+variantSchema.plugin(AutoIncrement, { inc_field: 'serial_number' });
 const Variant = mongoose.model("Variant", variantSchema);
 module.exports = Variant;
