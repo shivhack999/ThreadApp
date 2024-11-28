@@ -385,7 +385,7 @@ const userProfile = async(req,res) =>{
         const userData = await Users.findById(userID).select(" -active -create_At -refreshToken -password");
         return res.status(userData ? 200 : 400).json({
             success: userData? true : false,
-            user: userData ? userData : 'No data found!'
+            response: userData ? userData : 'No data found!'
         })
     } catch (error) {
         return res.status(400).json({
