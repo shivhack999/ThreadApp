@@ -48,37 +48,11 @@ const addProduct = async(req,res) =>{
 }
 const showProduct = async(req,res)=>{
     
-    const {title,
-          vendor,
-          product_type,
-          published_At,
-          targetAudience,
-          brand,
-          tags,
-          created_By} = req.query;
-    // let filter = {};
-    // if (title) filter.title = new RegExp(title, 'i');
-    // if (category) filter.category = { $in: category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (sub_category) filter.sub_category = { $in: sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (sub_sub_category) filter.sub_sub_category = { $in: sub_sub_category.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (brand) filter.brand = { $in: brand.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (color) filter.color = { $in: color.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (material) filter.material = { $in: material.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (targetAudience) filter.targetAudience = { $in: targetAudience.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
-    // if (keywords) filter.keywords = { $in: keywords.split(',').map(value => new RegExp(`^${value}$`, 'i')) };
+    const {title, vendor, product_type, published_At, targetAudience, brand, tags, created_By} = req.query;
 
-    // // Filter by discount range, if specified
-    // if (discount) filter.discount = { $gte: parseFloat(discount) };
-
-    // // Filter by price range if specified
-    // if (min_price || max_price) {
-    //   filter.sale_price = {};
-    //   if (min_price) filter.sale_price.$gte = parseFloat(min_price);
-    //   if (max_price) filter.sale_price.$lte = parseFloat(max_price);
-    // }
 
     try {
-        // Fetch products based on filter
+
     const products = await Product.find();
 
     res.status(200).json({ message: 'Products fetched successfully', products: products });

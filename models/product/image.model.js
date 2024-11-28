@@ -23,12 +23,12 @@ const imageSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    created_by:{ // hold ID of employee which is add product 
+    created_By:{ // hold ID of employee which is add product 
         type:mongoose.Schema.Types.ObjectId,
         ref:'Employee',
         required:true
     },
-    updated_by:{
+    updated_By:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'EMployee'
     },
