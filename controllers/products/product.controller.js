@@ -49,8 +49,6 @@ const addProduct = async(req,res) =>{
 const showProduct = async(req,res)=>{
     
     const {title, vendor, product_type, published_At, targetAudience, brand, tags, created_By} = req.query;
-
-
     try {
 
     const products = await Product.find();
