@@ -149,8 +149,9 @@ const login = async(req,res) =>{
         const responseUserData = await Users.findById(userData._id).select("-password -create_At -refreshToken -__v");
         const option ={
             httpOnly:true,
-            secure:true,
-            sameSite:'strict'
+            secure:false,
+            sameSite:'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day in milliseconds
         }
         return res.status(200)
         .cookie("accessToken", accessToken, option)
