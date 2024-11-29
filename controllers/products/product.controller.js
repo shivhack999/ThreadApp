@@ -47,18 +47,80 @@ const addProduct = async(req,res) =>{
     }
 }
 const showProduct = async(req,res)=>{
-    
-    const {title, vendor, product_type, published_At, targetAudience, brand, tags, created_By} = req.query;
+    const { page = 1, limit = 10, sortBy = "created_At", order = "desc", title, brand, product_type, published_At, targetAudience, tags } = req.query;
     try {
+        const pipeline = [];
+        // Filtering by query parameters
+        if (title) {
+            pipeline.push({
+                $match: { title: { $regex: title, $options: "i" } } // Case-insensitive search for title
+            });
+        }
+        if (brand) {
+            pipeline.push({
+                $match: { brand } // Filter by brand
+            });
+        }
 
-    const products = await Product.find();
+        if (targetAudience) {
+            pipeline.push({
+                $match: { targetAudience } // Filter by target audience
+            });
+        }
+        pipeline.push({
+            $sort: { [sortBy]: order === "asc" ? 1 : -1 }
+        });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        pipeline.push({ $skip: skip }, { $limit: parseInt(limit) });
 
-    res.status(200).json({ message: 'Products fetched successfully', products: products });
-    } catch (error) {
-        return res.status(400).json({
-            success:false,
-            message:error
+        pipeline.push({
+            $lookup: {
+                from: "variants", // Replace with actual collection name
+                localField: "_id",
+                foreignField: "productId",
+                as: "Variant"
+            }
+        });
+
+        pipeline.push({
+            $project:{
+                __v:0,
+                vendor:0,
+                created_By:0,
+                create_At:0,
+                updated_By:0,
+                created_by:0,
+                Variant :{
+                    buy_price:0,
+                    __v:0,
+                    created_By:0,
+                    created_At:0,
+                    updated_By:0,
+                    updated_At:0,
+                    quantity_rule:{
+                        _id:0
+                    }
+                }
+            }
         })
+        const products = await Product.aggregate(pipeline);
+        res.status(200).json({
+            success: true,
+            products,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                count: products.length,
+            },
+        });
+
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(400).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
     }
 }
 const productDetails = async(req,res) =>{
@@ -286,6 +348,16 @@ const addVariant = async(req,res) =>{
         })
     }
 }
+const addImages = async(req,res) =>{
+    try {
+        console.log(req.files);
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:'Something is wrong please connect with developer.'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -298,5 +370,6 @@ module.exports = {
     showSubSubCategory,
     incrementSubSubProductSearchCount,
     addVariant,
+    addImages,
     
 }

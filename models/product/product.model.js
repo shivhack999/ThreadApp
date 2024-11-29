@@ -40,11 +40,11 @@ const productSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'EMployee'
     },
-    create_At:{
+    created_At:{
         type:Date,
         default:Date.now
     },
-    update_At:{
+    updated_At:{
         type:Date
     },
     

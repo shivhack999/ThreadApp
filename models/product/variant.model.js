@@ -66,6 +66,10 @@ const variantSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    size:{
+        type:String,
+        required:true
+    },
     barcode:{
         type:String
     },
