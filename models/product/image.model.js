@@ -1,10 +1,6 @@
 const mongoose = require("mongoose")
 
 const imageSchema = mongoose.Schema({
-    productId:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:true
-    },
     variantId:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,
@@ -19,8 +15,12 @@ const imageSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    src:{
+    url:{
         type:String,
+        required:true
+    },
+    position:{
+        type:Number,
         required:true
     },
     created_By:{ // hold ID of employee which is add product 
@@ -30,7 +30,7 @@ const imageSchema = mongoose.Schema({
     },
     updated_By:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'EMployee'
+        ref:'Employee'
     },
     create_At:{
         type:Date,

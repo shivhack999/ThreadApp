@@ -5,26 +5,20 @@ const addressSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         required:true
     },
-    full_name:{
+    fullName:{
         type:String,
         required:true
     },
-    phone_number:{
+    addressType:{
+        type:String,
+        enum:['Home','Work','Office'],
+        required:true
+    },
+    phone:{
         type:[Number],
         required:true,
     },
-    pin_code:{
-        type:Number,
-        required:true
-    },
-    state:{
-        type:String,
-        required:true
-    },
-    city:{
-        type:String,
-        required:true
-    },
+    // house no , colony/area/ , landmark, city, state, pin code 
     house_No_Or_building_No:{
         type:String,
         required:true
@@ -33,9 +27,21 @@ const addressSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    city:{
+        type:String,
+        required:true
+    },
+    state:{
+        type:String,
+        required:true
+    },
+    pin_code:{
+        type:Number,
+        required:true
+    },
     create_At:{
         type:Date,
-        default:Date.now()
+        default:Date.now
     }
 });
 

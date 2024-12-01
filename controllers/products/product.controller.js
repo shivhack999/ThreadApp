@@ -3,6 +3,8 @@ const Category = require('../../models/product/category.model');
 const SubCategory = require('../../models/product/sub_category.model');
 const SubSubCategory = require('../../models/product/sub_sub_category');
 const Variant = require('../../models/product/variant.model');
+const Image = require('../../models/product/image.model');
+const insertMany = require('../../utils/query/insertMany');
 const addProduct = async(req,res) =>{
     const {
         title,
@@ -27,7 +29,7 @@ const addProduct = async(req,res) =>{
           brand,
           tags,
           created_By:req.empId,
-          created_At:Date.now,
+          created_At:Date.now(),
 
         });
         // Save product to the database
@@ -75,34 +77,90 @@ const showProduct = async(req,res)=>{
 
         pipeline.push({
             $lookup: {
-                from: "variants", // Replace with actual collection name
+                from: "variants", // Actual collection name in your database
                 localField: "_id",
                 foreignField: "productId",
-                as: "Variant"
+                as: "Variants"
             }
         });
 
+        // Lookup Images for each Variant
         pipeline.push({
-            $project:{
-                __v:0,
-                vendor:0,
-                created_By:0,
-                create_At:0,
-                updated_By:0,
-                created_by:0,
-                Variant :{
-                    buy_price:0,
-                    __v:0,
-                    created_By:0,
-                    created_At:0,
-                    updated_By:0,
-                    updated_At:0,
-                    quantity_rule:{
-                        _id:0
+            $lookup: {
+                from: "images", // Actual collection name in your database
+                localField: "Variants._id",
+                foreignField: "variantId",
+                as: "Images"
+            }
+        });
+
+        // Structuring the Data
+        pipeline.push({
+            $addFields: {
+                Variants: {
+                    $map: {
+                        input: "$Variants",
+                        as: "variant",
+                        in: {
+                            _id: "$$variant._id",
+                            title: "$$variant.title",
+                            serial_number: "$$variant.serial_number",
+                            quantity:"$$variant.quantity",
+                            color:"$$variant.color",
+                            material:"$$variant.material",
+                            sale_price:"$$variant.sale_price",
+                            discount:"$$variant.discount",
+                            size:"$$variant.size",
+                            barcode:"$$variant.taxable",
+                            quantity_rule:"$$variant.quantity_rule",
+                            price_currency:"$$variant.price_currency",
+                            images: {
+                                $filter: {
+                                    input: "$Images",
+                                    as: "image",
+                                    cond: { $eq: ["$$image.variantId", "$$variant._id"] }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        })
+        });
+
+        // // Exclude Unnecessary Fields
+        // pipeline.push({
+        //     $project: {
+        //         __v: 0,
+        //         vendor: 0,
+        //         created_By: 0,
+        //         created_At: 0,
+        //         updated_By: 0,
+        //         updated_At: 0,
+        //         Images: 0 // Since images are already nested under Variants
+        //     }
+        // });
+
+        // pipeline.push({
+        //     $project:{
+        //         __v:0,
+        //         vendor:0,
+        //         created_By:0,
+        //         create_At:0,
+        //         updated_By:0,
+        //         created_by:0,
+        //         Variant :{
+        //             buy_price:0,
+        //             __v:0,
+        //             created_By:0,
+        //             created_At:0,
+        //             updated_By:0,
+        //             updated_At:0,
+        //             quantity_rule:{
+        //                 _id:0
+        //             }
+        //         }
+        //     }
+        // })
         const products = await Product.aggregate(pipeline);
         res.status(200).json({
             success: true,
@@ -349,8 +407,26 @@ const addVariant = async(req,res) =>{
     }
 }
 const addImages = async(req,res) =>{
+    const empId = req.empId;
     try {
-        console.log(req.files);
+        const { variantId, published_scope, alt} = req.body;
+        const files = req.files;
+        var imageData = [];
+        files.map(({filename},index)=>{
+            imageData.push({variantId, published_scope:published_scope, alt:alt, url:filename, position:index, created_By:empId });
+        });
+        console.log(imageData);
+        const savedImage = await insertMany(Image, imageData);
+        if(savedImage){
+            return res.status(201).json({
+                response:"Image Upload Successfully.",
+                success:true
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            response:'Something is wrong please try again.'
+        })
     } catch (error) {
         return res.status(400).json({
             success:false,
