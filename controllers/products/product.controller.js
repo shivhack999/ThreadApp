@@ -5,6 +5,7 @@ const SubSubCategory = require('../../models/product/sub_sub_category');
 const Variant = require('../../models/product/variant.model');
 const Image = require('../../models/product/image.model');
 const insertMany = require('../../utils/query/insertMany');
+const find = require('../../utils/query/find');
 const addProduct = async(req,res) =>{
     const {
         title,
@@ -162,8 +163,10 @@ const showProduct = async(req,res)=>{
         //     }
         // })
         const products = await Product.aggregate(pipeline);
+        const root = `${req.protocol}://${req.get('host')}/uploads`;
         res.status(200).json({
             success: true,
+            root,
             products,
             pagination: {
                 page: parseInt(page),
@@ -198,7 +201,6 @@ const productDetails = async(req,res) =>{
         })
     }
 }
-
 const addCategory = async(req,res) =>{
     try {
         const { category_name, images } = req.body;
@@ -209,7 +211,7 @@ const addCategory = async(req,res) =>{
     }
     const category = new Category({
         category_name,
-        images
+        images:images[0]
     });
 
     // Save the category to the database
@@ -251,7 +253,7 @@ const addSubCategory = async(req,res) =>{
         const {categoryId,sub_category_name,images} = req.body;
 
         const new_sub_category = new SubCategory({
-            categoryId,sub_category_name,images
+            categoryId,sub_category_name,images:images[0]
         });
         let sub_category_response = await new_sub_category.save();
         if(sub_category_response){
@@ -272,7 +274,6 @@ const addSubCategory = async(req,res) =>{
         })
     }
 }
-
 const showSubCategory = async(req,res) =>{
     try {
         const root = `${req.protocol}://${req.get('host')}/uploads`;
@@ -289,12 +290,11 @@ const showSubCategory = async(req,res) =>{
         })
     }
 }
-
 const addSubSubCategory = async(req,res)=>{
     try {
         const {subCategoryId,sub_sub_category_name, images} = req.body;
         const newSSC = new SubSubCategory({
-            subCategoryId,sub_sub_category_name, images
+            subCategoryId,sub_sub_category_name, images:images[0]
         });
         const newSSCresponse = await newSSC.save();
         if(newSSCresponse){
@@ -410,17 +410,19 @@ const addImages = async(req,res) =>{
     const empId = req.empId;
     try {
         const { variantId, published_scope, alt} = req.body;
-        const files = req.files;
+        const files = req.body.images;
+        console.log(files)
         var imageData = [];
-        files.map(({filename},index)=>{
-            imageData.push({variantId, published_scope:published_scope, alt:alt, url:filename, position:index, created_By:empId });
-        });
-        console.log(imageData);
+        for(let index=0; index<files.length; ++index){
+            imageData.push({variantId, published_scope:published_scope, alt:alt, url:files[index], position:index, created_By:empId });
+        }
         const savedImage = await insertMany(Image, imageData);
+
         if(savedImage){
             return res.status(201).json({
                 response:"Image Upload Successfully.",
-                success:true
+                success:true,
+                savedImage
             })
         }
         return res.status(400).json({
@@ -428,9 +430,42 @@ const addImages = async(req,res) =>{
             response:'Something is wrong please try again.'
         })
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success:false,
             response:'Something is wrong please connect with developer.'
+        })
+    }
+}
+const showAllColorOfProduct = async(req,res) =>{
+    try {
+        const select = "color -_id";
+        const modelName = Variant;
+        const colorList = await find(modelName,select);
+        if(colorList){
+            return res.status(200).json({
+                success:true,
+                data:colorList
+            });
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success:false,
+            response:'something is wrong.'
+        })
+    }
+}
+const showAllColorOfVariant = async(req,res) =>{
+    try {
+        const productId = req.query.productId || req.body.productId || req.params.productId ;
+        const modelName = Variant;
+        const select =" color";
+        
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:'Something is wrong please try again.'
         })
     }
 }
@@ -447,5 +482,6 @@ module.exports = {
     incrementSubSubProductSearchCount,
     addVariant,
     addImages,
-    
+    showAllColorOfProduct,
+    showAllColorOfVariant
 }

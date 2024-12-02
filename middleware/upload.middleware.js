@@ -10,7 +10,10 @@ const getMulterStorage = (uploadPath) => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
       fullPath = path.join(__dirname, '../uploads', uploadPath);
-      req.body.images = uploadPath + "/" +date + '-' + file.originalname;
+      var imgList = [];
+      imgList.push(uploadPath + "/" +date + '-' + file.originalname);
+      req.body.images = imgList;
+
       // Create directory if it doesn't exist
       fs.mkdirSync(fullPath, { recursive: true });
       cb(null, fullPath); // Use dynamic path for destination

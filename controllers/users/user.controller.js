@@ -16,6 +16,7 @@ const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
 const Address = require('../../models/users/Address.model');
 const userFindById = require("../../helpers/users/userFindById");
+const find = require("../../utils/query/find")
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -428,9 +429,21 @@ const userProfileUpdate = async(req,res) =>{
 const addressAdd = async(req,res) =>{
     try {
         const userId = req.userID;
-        const addressData = {user:userId, ...req.body};
+        const  {fullName, addressType, phone, alternative, houseNo, colonyName, landmark, city, state, pincode} = req.body;
+        const addressData = {
+            userId,
+            fullName,
+            address_type:addressType,
+            phone_number:phone,
+            alternative_number:alternative,
+            house_No_Or_building_No:houseNo,
+            area_Or_colony:colonyName,
+            landmark,
+            city,
+            state,
+            pin_code:pincode,
+        }
         const newAddress = new Address(addressData);
-        console.log(newAddress);
         const address = await newAddress.save();
         return res.status(200).json({
             success:true,
@@ -447,7 +460,7 @@ const addressAdd = async(req,res) =>{
 const addressDelete = async(req,res) =>{
     try {
         const userId = req.userID;
-        const addressId = req.query['addressId'] || req.body.addressId || req.params['addressId'];
+        const addressId = req.query.addressId || req.body.addressId || req.param.addressId;
         const address = await Address.findOneAndDelete({
             user:userId,
             _id:addressId
@@ -474,24 +487,30 @@ const addressUpdate = async(req,res)=>{
         const userId = req.userID;
         const {
             addressId,
-            full_name,
-            phone_number,
-            pin_code,
-            state,
-            city,
-            house_No_Or_building_No,
-            area
+            addressType, 
+            phone, 
+            alternative, 
+            houseNo, 
+            colonyName, 
+            landmark, 
+            city, 
+            state, 
+            pincode
         } = req.body;
         const updatedAddress = await Address.findOneAndUpdate(
             {_id:addressId, user:userId},
             {
-                full_name,
-                phone_number,
-                pin_code,
-                state,
+                fullName,
+                addressType,
+                phone_number: phone,
+                alternative_number:alternative,
+                house_No_Or_building_No:houseNo,
+                area_Or_colony:colonyName,
+                landmark,
                 city,
-                house_No_Or_building_No,
-                area
+                state,
+                pin_code : pincode,
+                updated_At:Date.now()
             },
             { new: true, runValidators: true } 
         );
@@ -517,15 +536,23 @@ const addressUpdate = async(req,res)=>{
 const addressShow = async(req,res) =>{
     try {
         const userId = req.userID;
-        const address = await Address.find({user:userId}).select("-__v -create_At -user");
-        return res.status(200).json({
-            success:true,
-            address
+        const select = "-__v -create_At -user -updated_At";
+        const condition = {user:userId};
+        const address = await find(Address, select, condition);
+        if(address){
+            return res.status(200).json({
+                success:true,
+                address
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            response:'Something is wrong please try again.'
         })
     } catch (error) {
         return res.status(400).json({
             success:false,
-            msg:"something is wrong."
+            response:"something is wrong."
         })
     }
 }
