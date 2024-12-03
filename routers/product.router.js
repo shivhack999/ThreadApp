@@ -18,5 +18,5 @@ router.put("/incrementSubSubProductSearchCount/:id", productController.increment
 router.post("/addImages", empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addImages);
 router.post("/addVariant", empTokenVerify, productController.addVariant);
 router.get("/showAllColorOfProduct",productController.showAllColorOfProduct);
+router.get("/showAllColorOfVariant", productController.showAllColorOfVariant);
 module.exports = router;
-

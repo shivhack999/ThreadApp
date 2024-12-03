@@ -26,8 +26,6 @@ const addressSchema = mongoose.Schema({
         maxLength:10,
         minLength:10,
     },
-    // house no , colony/area/ , landmark, city, state, pin code 
-    // alternative number
     houseNo:{
         type:String,
         required:true
