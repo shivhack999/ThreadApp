@@ -461,7 +461,6 @@ const showAllColorOfVariant = async(req,res) =>{
         const productId = req.query.productId || req.body.productId || req.params.productId ;
         const modelName = Variant;
         const select =" color";
-        
     } catch (error) {
         return res.status(400).json({
             success:false,

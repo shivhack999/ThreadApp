@@ -3,35 +3,36 @@ const mongoose = require('mongoose')
 const addressSchema = mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:'users',
         required:true
     },
     fullName:{
         type:String,
         required:true
     },
-    address_type:{
+    addressType:{
         type:String,
         enum:['Home','Work','Office'],
         required:true
     },
-    phone_number:{
+    phone:{
         type:Number,
         maxLength:10,
         minLength:10,
         required:true,
     },
-    alternative_number:{
+    alternative:{
         type:Number,
         maxLength:10,
         minLength:10,
     },
     // house no , colony/area/ , landmark, city, state, pin code 
     // alternative number
-    house_No_Or_building_No:{
+    houseNo:{
         type:String,
         required:true
     },
-    area_Or_colony:{
+    colonyName:{
         type:String,
         required:true
     },
@@ -46,7 +47,7 @@ const addressSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    pin_code:{
+    pincode:{
         type:Number,
         maxLength:6,
         minLength:6,

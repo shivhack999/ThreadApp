@@ -1,4 +1,5 @@
 const find = async(modelName, select, condition) =>{
+  // console.log(modelName, select, condition)
   try {
     return await modelName.find(condition).select(select).lean();
   } catch (error) {
