@@ -461,6 +461,7 @@ const addressDelete = async(req,res) =>{
     try {
         const userId = req.userID;
         const addressId = req.query.addressId || req.body.addressId || req.param.addressId;
+        console.log(addressId);
         const address = await Address.findOneAndDelete({
             user:userId,
             _id:addressId
