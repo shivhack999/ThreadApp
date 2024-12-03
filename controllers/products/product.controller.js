@@ -43,9 +43,9 @@ const addProduct = async(req,res) =>{
             })
         }
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            message:error
+            message:'Internal server error'
         })
     }
 }
@@ -176,12 +176,10 @@ const showProduct = async(req,res)=>{
         });
 
     } catch (error) {
-        console.error("Error fetching products:", error);
-        res.status(400).json({
-            success: false,
-            message: "Internal server error",
-            error: error.message,
-        });
+        return res.status(500).json({
+            success:false,
+            message:'Internal server error'
+        })
     }
 }
 const productDetails = async(req,res) =>{
@@ -195,9 +193,9 @@ const productDetails = async(req,res) =>{
         });
 
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            message:error
+            message:'Internal server error'
         })
     }
 }
@@ -222,9 +220,9 @@ const addCategory = async(req,res) =>{
     res.status(400).json({ success:false,response:"Something is missing please connect with developer."})
     } catch (error) {
         console.log(error)
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -242,9 +240,9 @@ const showCategory = async(req,res) =>{
         });
 
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -268,9 +266,9 @@ const addSubCategory = async(req,res) =>{
             response:"Something is wrong please connect with develop team."
         })
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -284,9 +282,9 @@ const showSubCategory = async(req,res) =>{
             response:(sub_categories)? sub_categories : null
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -304,9 +302,9 @@ const addSubSubCategory = async(req,res)=>{
             })
         }
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -321,9 +319,9 @@ const showSubSubCategory = async(req,res) =>{
             response: (listOfSSC) ? listOfSSC : 'No Data found.'
         })
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            message:'Internal server error'
         })
     }
 }
@@ -343,9 +341,9 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
             response: 'Search count incremented successfully',
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:'Something is missing please try again!'
+            message:'Internal server error'
         })
     }
 }
@@ -399,10 +397,9 @@ const addVariant = async(req,res) =>{
             message:'Something is wrong please try again.'
         })
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:'Something is wrong please connect with developer.'
+            message:'Internal server error'
         })
     }
 }
@@ -420,20 +417,19 @@ const addImages = async(req,res) =>{
 
         if(savedImage){
             return res.status(201).json({
-                response:"Image Upload Successfully.",
+                message:"Image Upload Successfully.",
                 success:true,
                 savedImage
             })
         }
         return res.status(400).json({
             success:false,
-            response:'Something is wrong please try again.'
+            message:'Something is wrong please try again.'
         })
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:'Something is wrong please connect with developer.'
+            message:'Internal server error'
         })
     }
 }
@@ -449,10 +445,9 @@ const showAllColorOfProduct = async(req,res) =>{
             });
         }
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:'something is wrong.'
+            message:'Internal server error'
         })
     }
 }
@@ -460,12 +455,22 @@ const showAllColorOfVariant = async(req,res) =>{
     try {
         const productId = req.query.productId || req.body.productId || req.params.productId ;
         const modelName = Variant;
-        const select =" color";
-        
-    } catch (error) {
+        const select ="color";
+        const condition = { productId}
+        const colorList = await find(modelName, select, condition);
+        if(colorList){
+            return res.status(200).json({
+                success:true,
+                response:colorList
+            })
+        }
         return res.status(400).json({
+
+        })
+    } catch (error) {
+        return res.status(500).json({
             success:false,
-            response:'Something is wrong please try again.'
+            message:'Internal server error'
         })
     }
 }

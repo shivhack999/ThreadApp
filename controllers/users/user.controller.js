@@ -433,15 +433,15 @@ const addressAdd = async(req,res) =>{
         const addressData = {
             userId,
             fullName,
-            address_type:addressType,
-            phone_number:phone,
-            alternative_number:alternative,
-            house_No_Or_building_No:houseNo,
-            area_Or_colony:colonyName,
+            addressType,
+            phone,
+            alternative,
+            houseNo,
+            colonyName,
             landmark,
             city,
             state,
-            pin_code:pincode,
+            pincode,
         }
         const newAddress = new Address(addressData);
         const address = await newAddress.save();
@@ -459,13 +459,8 @@ const addressAdd = async(req,res) =>{
 }
 const addressDelete = async(req,res) =>{
     try {
-        const userId = req.userID;
         const addressId = req.query.addressId || req.body.addressId || req.param.addressId;
-        console.log(addressId);
-        const address = await Address.findOneAndDelete({
-            user:userId,
-            _id:addressId
-        })
+        const address = await Address.findByIdAndDelete(addressId)
         if(!address){
             return res.status(400).json({
                 success:false,
@@ -488,6 +483,7 @@ const addressUpdate = async(req,res)=>{
         const userId = req.userID;
         const {
             addressId,
+            fullName,
             addressType, 
             phone, 
             alternative, 
@@ -498,22 +494,28 @@ const addressUpdate = async(req,res)=>{
             state, 
             pincode
         } = req.body;
-        const updatedAddress = await Address.findOneAndUpdate(
-            {_id:addressId, user:userId},
+        const verifyAddressId = await find(Address,"_id", {_id:addressId});
+        if(!verifyAddressId){
+            return res.status(401).json({
+                success:false,
+                message:'Address not fond'
+            });
+        }
+        const updatedAddress = await Address.findByIdAndUpdate(
+            addressId,
             {
                 fullName,
                 addressType,
-                phone_number: phone,
-                alternative_number:alternative,
-                house_No_Or_building_No:houseNo,
-                area_Or_colony:colonyName,
+                phone,
+                alternative,
+                houseNo,
+                colonyName,
                 landmark,
                 city,
                 state,
-                pin_code : pincode,
+                pincode,
                 updated_At:Date.now()
-            },
-            { new: true, runValidators: true } 
+            },{ new: true } 
         );
         if (!updatedAddress) {
             return res.status(400).json({
@@ -528,22 +530,36 @@ const addressUpdate = async(req,res)=>{
         })
     } catch (error) {
         console.log(error)
-        return res.status(400).json({
+        return res.status(500).json({
             success:false,
-            response:error
+            response:'Internal server error.'
         })
     }
 }
 const addressShow = async(req,res) =>{
     try {
         const userId = req.userID;
-        const select = "-__v -create_At -user -updated_At";
-        const condition = {user:userId};
+        const select = "-__v -create_At -user -updated_At -userId";
+        const condition = {userId};
         const address = await find(Address, select, condition);
+        const arrangeAddress = address.map((data)=>({
+            _id: data._id,
+            fullName: data.fullName,
+            addressType: data.addressType,
+            phone: data.phone,
+            address: [
+                data.houseNo,
+                data.colonyName,
+                data.landmark,
+                data.city,
+                data.state,
+                data.pincode,
+            ],
+        }));
         if(address){
             return res.status(200).json({
                 success:true,
-                address
+                address:arrangeAddress
             })
         }
         return res.status(400).json({
@@ -551,6 +567,7 @@ const addressShow = async(req,res) =>{
             response:'Something is wrong please try again.'
         })
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
             success:false,
             response:"something is wrong."
