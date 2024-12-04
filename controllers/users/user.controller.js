@@ -16,7 +16,8 @@ const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
 const Address = require('../../models/users/Address.model');
 const userFindById = require("../../helpers/users/userFindById");
-const find = require("../../utils/query/find")
+const find = require("../../utils/query/find");
+const findWithoutLean = require('../../utils/query/findWithoutLean');
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -635,6 +636,24 @@ const forgotPassword = async(req,res) =>{
         })
     }
 }
+const userProfileImg = async(req,res) =>{
+    try {
+        const userId = req.userID;
+        const image = req.body.images;
+        const userData = await findWithoutLean(Users, "_id image",{_id:userId});
+        if(userData.image !== null || userData.image !==""){
+            //remove image from upload folder
+            
+        }
+        userData.image = image;
+        userData.save();
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+
+        })
+    }
+}
 module.exports={
     login,
     register,
@@ -652,5 +671,6 @@ module.exports={
     addressUpdate,
     addressShow,
     verifyToken,
-    forgotPassword
+    forgotPassword,
+    userProfileImg
 }

@@ -12,7 +12,6 @@ const addressSchema = mongoose.Schema({
     },
     addressType:{
         type:String,
-        enum:['Home','Work','Office'],
         required:true
     },
     phone:{

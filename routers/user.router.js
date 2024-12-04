@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const dynamicUpload =  require('../middleware/upload.middleware');
 const userController = require('../controllers/users/user.controller');
 const userMiddleware = require('../middleware/users/user.middleware');
 const {userEmailSent, emailOTPVerify, userLogin, userRegister, userResetPassword} = require('../helpers/users/user.validator');
@@ -18,4 +19,5 @@ router.get("/addressShow", userMiddleware, userController.addressShow); // compl
 router.get("/verifyToken", userMiddleware, userController.verifyToken);
 router.post("/mobileOTPSent", userController.mobileOTPSent); // under Precess 
 router.post("/forgotPassword", userController.forgotPassword);
+router.post("userProfileImg", userMiddleware, dynamicUpload("/user/profile"), userController.userProfileImg)
 module.exports = router;
