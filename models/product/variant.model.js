@@ -34,6 +34,10 @@ const variantSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    colorImage:{ // it is use for web color image show
+        type:String,
+        required:true
+    },
     order_count:{
         type:Number,
         default:0
@@ -84,6 +88,14 @@ const variantSchema = new mongoose.Schema({
     price_currency:{
         type:String,
         default:"INR"
+    },
+    targetAudience:{
+        type: [String],
+        enum: ['Male', 'Female', 'Children', 'Unisex'],
+        required: true
+    },
+    rating:{
+        type:Number,
     },
     created_By:{
         type:mongoose.Schema.Types.ObjectId,

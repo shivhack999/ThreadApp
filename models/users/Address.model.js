@@ -56,6 +56,10 @@ const addressSchema = mongoose.Schema({
     },
     updated_At:{
         type:Date
+    },
+    updated_By:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
     }
 });
 

@@ -4,6 +4,7 @@ const dynamicUpload =  require('../middleware/upload.middleware')
 const productController = require('../controllers/products/product.controller');
 const {productAdd} = require('../helpers/products/product.validation');
 const empTokenVerify = require("../middleware/emp/emp.middleware");
+const deviceIdentify = require("../middleware/security/identifyDevice");
 // dynamicUpload("/products/t-shirt")
 router.post("/addProduct", empTokenVerify, productAdd, productController.addProduct);
 router.get("/productDetails", productController.productDetails);
@@ -17,6 +18,7 @@ router.get("/showSubSubCategory", productController.showSubSubCategory);
 router.put("/incrementSubSubProductSearchCount/:id", productController.incrementSubSubProductSearchCount);
 router.post("/addImages", empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addImages);
 router.post("/addVariant", empTokenVerify, productController.addVariant);
-router.get("/showAllColorOfProduct",productController.showAllColorOfProduct);
+router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", productController.showAllColorOfVariant);
+router.get("/showAllFilters", productController.showAllFilters);
 module.exports = router;
