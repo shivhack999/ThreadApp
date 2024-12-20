@@ -3,10 +3,10 @@ const deviceIdentify = async(req, res, next) =>{
   const agent = useragent.parse(req.headers['user-agent']);
     if (agent.device.family === 'Other') {
         req.device = "Web";
-        // console.log("web")
+        console.log("web")
     } else {
         req.device = "App";
-        // console.log("App")
+        console.log("App")
     }
   next();
 }
