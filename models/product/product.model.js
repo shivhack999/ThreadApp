@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
     },
     product_type:{  // sub_sub_categories = product_type
         type:mongoose.Schema.Types.String,
-            ref:'SubSubCategory',
+        ref:'SubSubCategory',
         required:true
     },
     published_At:{
@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
     },
     targetAudience:{
         type: [String],
-        enum: ['male', 'female', 'children', 'unisex'],
+        enum: ['Male', 'Female', 'Children', 'Unisex'],
         required: true
     },
     brand:{
@@ -47,7 +47,6 @@ const productSchema = new mongoose.Schema({
     updated_At:{
         type:Date
     },
-    
 })
 
 

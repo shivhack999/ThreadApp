@@ -6,6 +6,7 @@ const Variant = require('../../models/product/variant.model');
 const Image = require('../../models/product/image.model');
 const insertMany = require('../../utils/query/insertMany');
 const find = require('../../utils/query/find');
+const { options } = require('../../routers/product.router');
 const addProduct = async(req,res) =>{
     const {
         title,
@@ -474,6 +475,42 @@ const showAllColorOfVariant = async(req,res) =>{
         })
     }
 }
+const showAllFilters = async(req,res) =>{
+    try {
+        const {brand, product_type, targetAudience, material,range, discount, size , available, sortBy, rating} = req.query || req.body || req.params;
+        const pipeline = [];
+        if(brand){
+            pipeline.push({
+                $match: { brand: {$regex: brand , option:'i'}}
+            })
+        }
+        if(product_type){
+            pipeline.push({
+                $match:{ product_type : {$regex: product_type, option:'i'}}
+            })
+        }
+        if(targetAudience){
+            pipeline.push({
+                $match:{targetAudience:{$regex:targetAudience, option:'i'}}
+            })
+        }
+        if(material){
+            pipeline.push({
+                $match:{material: {regex:material, option:'i'}}
+            })
+        }
+        if(size){
+            pipeline.push({
+                $match:{size:{$regex:size, option:'i'}}
+            })
+        }
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -488,5 +525,6 @@ module.exports = {
     addVariant,
     addImages,
     showAllColorOfProduct,
-    showAllColorOfVariant
+    showAllColorOfVariant,
+    showAllFilters
 }

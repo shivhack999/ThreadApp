@@ -48,6 +48,13 @@ const userSchema = mongoose.Schema({
         type:Date,
         default: Date.now()
     },
+    updated_At:{
+        type:Date
+    },
+    updated_By:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Employee'
+    },
     active:{
         type:Boolean,
         default:true

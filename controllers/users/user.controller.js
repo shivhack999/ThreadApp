@@ -16,7 +16,9 @@ const sendMobileOTP = require('../../utils/mobiles/sentMobileOTP.util');
 const saveMobileOTPToDB = require('../../utils/mobiles/saveMobileOTPToDB.util');
 const Address = require('../../models/users/Address.model');
 const userFindById = require("../../helpers/users/userFindById");
-const find = require("../../utils/query/find")
+const find = require("../../utils/query/find");
+const findWithoutLean = require('../../utils/query/findWithoutLean');
+const removeImage = require("../../helpers/Common/images/removeImage");
 // const getSavedMobileOTPFromDB = require('../../utils/emails/getSavedOTPFromDB.util');
 
 const emailOTPSent = async(req,res) =>{
@@ -485,14 +487,9 @@ const addressUpdate = async(req,res)=>{
             addressId,
             fullName,
             addressType, 
-            phone, 
-            alternative, 
-            houseNo, 
-            colonyName, 
-            landmark, 
-            city, 
-            state, 
-            pincode
+            phone,
+            alternative,
+            address
         } = req.body;
         const verifyAddressId = await find(Address,"_id", {_id:addressId});
         if(!verifyAddressId){
@@ -508,13 +505,14 @@ const addressUpdate = async(req,res)=>{
                 addressType,
                 phone,
                 alternative,
-                houseNo,
-                colonyName,
-                landmark,
-                city,
-                state,
-                pincode,
-                updated_At:Date.now()
+                houseNo:address[0],
+                colonyName:address[1],
+                landmark:address[2],
+                city:address[3],
+                state:address[4],
+                pincode:address[5],
+                updated_At:Date.now(),
+                updated_By:userId
             },{ new: true } 
         );
         if (!updatedAddress) {
@@ -631,7 +629,35 @@ const forgotPassword = async(req,res) =>{
     } catch (error) {
         return res.status(400).json({
             success:false,
-
+        })
+    }
+}
+const userProfileImg = async(req,res) =>{
+    try {
+        const userId = req.userID;
+        const image = req.body.images;
+        var imageRemoveResponse = false;
+        var imageInsertResponse = false;
+        const userData = await findWithoutLean(Users, "_id image",{_id:userId});
+        if(userData.image !== null || userData.image !==""){
+            imageRemoveResponse = await removeImage(userData.image, "/user/profile");
+        }    
+        userData.image = image;
+        imageInsertResponse = await userData.save();
+        if(imageRemoveResponse && imageInsertResponse){
+            return res.status(200).json({
+                success:true,
+                response:'Profile update successfully.'
+            })
+        }
+        return res.status(400).json({
+            success:false,
+            response:'Network error please try again?'
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            response:'Network error please try again.'
         })
     }
 }
@@ -652,5 +678,6 @@ module.exports={
     addressUpdate,
     addressShow,
     verifyToken,
-    forgotPassword
+    forgotPassword,
+    userProfileImg
 }

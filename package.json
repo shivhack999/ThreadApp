@@ -24,7 +24,8 @@
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15",
     "nodemon": "^3.1.0",
-    "unirest": "^0.6.0"
+    "unirest": "^0.6.0",
+    "useragent": "^2.3.0"
   },
   "description": ""
 }
