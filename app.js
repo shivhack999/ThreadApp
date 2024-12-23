@@ -9,6 +9,7 @@ const userRoutes = require("./routers/user.router");
 const empRouters = require("./routers/emp.router");
 const productRouter = require('./routers/product.router');
 const userActivity = require('./routers/activity.router');
+const vendorRouter = require("./routers/vendor.router");
 const app = express();
 app.use(cors({
     // origin: 'http://localhost:3000', // Replace with your React Native app's URL
@@ -26,6 +27,7 @@ app.use("/users", userActivity);
 app.use('/users',userRoutes);
 app.use("/emp", empRouters);
 app.use("/product", productRouter);
+app.use("/vendor", vendorRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!');
