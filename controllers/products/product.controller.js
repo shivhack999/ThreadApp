@@ -313,13 +313,14 @@ const addSubSubCategory = async(req,res)=>{
 }
 const showSubSubCategory = async(req,res) =>{
     try {
-        const listOfSSC = await SubSubCategory.find().exec();
+        const select = "name images";
+        const listOfSSC = await find(SubSubCategory,select);
         let status = (listOfSSC) ? 200 :400;
         const root = `${req.protocol}://${req.get('host')}/uploads`;
         return res.status(status).json({
             success:(status == 200) ? true :false,
             root:root,
-            response: (listOfSSC) ? listOfSSC : 'No Data found.'
+            data: (listOfSSC) ? listOfSSC : 'No Data found.'
         })
     } catch (error) {
         return res.status(500).json({
