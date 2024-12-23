@@ -51,6 +51,8 @@ const addProduct = async(req,res) =>{
     }
 }
 const showProduct = async(req,res)=>{
+    const device = req.device;
+    console.log(device)
     const { page = 1, limit = 10, sortBy = "created_At", order = "desc", title, brand, product_type, published_At, targetAudience, tags } = req.query;
     try {
         const pipeline = [];
@@ -436,6 +438,7 @@ const addImages = async(req,res) =>{
 }
 const showAllColorOfProduct = async(req,res) =>{
     try {
+
         const select = "color -_id";
         const modelName = Variant;
         const colorList = await find(modelName,select);
