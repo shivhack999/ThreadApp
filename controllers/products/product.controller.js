@@ -6,11 +6,12 @@ const Variant = require('../../models/product/variant.model');
 const Image = require('../../models/product/image.model');
 const insertMany = require('../../utils/query/insertMany');
 const find = require('../../utils/query/find');
-const { options } = require('../../routers/product.router');
+const Brand = require("../../models/product/brand.model");
+
 const addProduct = async(req,res) =>{
     const {
         title,
-        vendor,
+        vendorId,
         product_type,
         published_At,
         targetAudience,
@@ -24,7 +25,7 @@ const addProduct = async(req,res) =>{
         // Create a new Product instance
         const newProduct = new Product({
           title,
-          vendor,
+          vendorId,
           product_type,
           published_At,
           targetAudience,
@@ -44,7 +45,8 @@ const addProduct = async(req,res) =>{
             })
         }
     } catch (error) {
-        return res.status(500).json({
+        console.log(error)
+        return res.status(400).json({
             success:false,
             message:'Internal server error'
         })
@@ -176,6 +178,22 @@ const showProduct = async(req,res)=>{
                 limit: parseInt(limit),
                 count: products.length,
             },
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:'Internal server error'
+        })
+    }
+}
+const showProductTitle = async(req,res) =>{
+    try {
+        await find(Product,"title").then((response)=>{
+            return res.status(200).json({
+                success:true,
+                data:response
+            })
         });
 
     } catch (error) {
@@ -515,9 +533,51 @@ const showAllFilters = async(req,res) =>{
         })
     }
 }
+const addBrand = async(req,res) =>{
+    try {
+    const empId = req.empId;
+    const {name} = req.body;
+    let insertData = [];
+    for(let i=0; i<name.length; ++i){
+        const temp ={
+            created_By:empId,
+            name:name[i]
+        }
+        insertData.push(temp);
+    }
+    brandResponse = await insertMany(Brand, insertData);
+    if(brandResponse){
+        return res.status(201).json({
+            success:true,
+            message:"Brand added successfully."
+        })
+    }
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong'
+        })
+    }
+}
+const showBrand = async(req,res) =>{
+    try {
+        const brandList = await find(Brand,"name");
+        return res.status(200).json({
+            success:true,
+            message:"List of all brands.",
+            data:brandList
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
+    showProductTitle,
     productDetails,
     addCategory,
     showCategory,
@@ -530,5 +590,7 @@ module.exports = {
     addImages,
     showAllColorOfProduct,
     showAllColorOfVariant,
-    showAllFilters
+    showAllFilters,
+    addBrand,
+    showBrand
 }

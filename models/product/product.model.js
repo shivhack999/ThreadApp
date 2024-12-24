@@ -5,12 +5,13 @@ const productSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    vendor:{
-        type:String,
+    vendorId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Vendor",
         required:true,
     },
     product_type:{  // sub_sub_categories = product_type
-        type:mongoose.Schema.Types.String,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'SubSubCategory',
         required:true
     },
@@ -23,7 +24,7 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     brand:{
-        type:mongoose.Schema.Types.String,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Brand',
         required:true
     },

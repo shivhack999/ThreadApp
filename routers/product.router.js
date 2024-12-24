@@ -10,6 +10,7 @@ const deviceIdentify = require("../middleware/security/identifyDevice");
 router.post("/addProduct", deviceIdentify, empTokenVerify, productAdd, productController.addProduct);
 router.get("/productDetails", deviceIdentify, productController.productDetails);
 router.get("/showProduct", deviceIdentify, productController.showProduct);
+router.get("/showProductTitle", deviceIdentify, productController.showProductTitle);
 router.post("/addCategory", deviceIdentify, dynamicUpload("/products/category"), productController.addCategory);
 router.get("/showCategory", deviceIdentify, productController.showCategory);
 router.post("/addSubCategory", deviceIdentify, dynamicUpload("/products/sub_category"), productController.addSubCategory);
@@ -22,4 +23,7 @@ router.post("/addVariant", deviceIdentify, empTokenVerify, productController.add
 router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllColorOfVariant);
 router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);
+router.post("/addbrand", empTokenVerify, productController.addBrand);
+router.get("/showBrand", productController.showBrand); 
+
 module.exports = router;
