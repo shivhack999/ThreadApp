@@ -5,6 +5,7 @@ const productController = require('../controllers/products/product.controller');
 const {productAdd} = require('../helpers/products/product.validation');
 const empTokenVerify = require("../middleware/emp/emp.middleware");
 const deviceIdentify = require("../middleware/security/identifyDevice");
+const upload = require('../middleware/upload.middleware');
 
 // dynamicUpload("/products/t-shirt")
 router.post("/addProduct", deviceIdentify, empTokenVerify, productAdd, productController.addProduct);
@@ -19,7 +20,7 @@ router.post("/addSubSubCategory", deviceIdentify, dynamicUpload("products/sub_su
 router.get("/showSubSubCategory", deviceIdentify, productController.showSubSubCategory);
 router.put("/incrementSubSubProductSearchCount/:id", deviceIdentify, productController.incrementSubSubProductSearchCount);
 router.post("/addImages", deviceIdentify, empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addImages);
-router.post("/addVariant", deviceIdentify, empTokenVerify, productController.addVariant);
+router.post("/addVariant", deviceIdentify, empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addVariant);
 router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllColorOfVariant);
 router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);

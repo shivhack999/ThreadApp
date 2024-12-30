@@ -28,7 +28,7 @@ const getMulterStorage = (uploadPath) => {
 const dynamicUpload = (uploadPath) => {
   return multer({
     storage: getMulterStorage(uploadPath),
-  }).array('images', 5); // Allows up to 5 images at once
+  }).array('images', 11); // Allows up to 11 images at once
 };
 
 module.exports = dynamicUpload;

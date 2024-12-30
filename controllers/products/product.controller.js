@@ -370,6 +370,7 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
     }
 }
 const addVariant = async(req,res) =>{
+    console.log("file",req.file.originalname);
     try {
         const empId = req.empId;
         const {
@@ -419,6 +420,7 @@ const addVariant = async(req,res) =>{
             message:'Something is wrong please try again.'
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success:false,
             message:'Internal server error'
@@ -428,12 +430,12 @@ const addVariant = async(req,res) =>{
 const addImages = async(req,res) =>{
     const empId = req.empId;
     try {
-        const { variantId, published_scope, alt} = req.body;
+        const { variantId, published_scope} = req.body;
         const files = req.body.images;
         console.log(files)
         var imageData = [];
         for(let index=0; index<files.length; ++index){
-            imageData.push({variantId, published_scope:published_scope, alt:alt, url:files[index], position:index, created_By:empId });
+            imageData.push({variantId, published_scope:published_scope, url:files[index], position:index, created_By:empId });
         }
         const savedImage = await insertMany(Image, imageData);
 
