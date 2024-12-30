@@ -370,7 +370,7 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
     }
 }
 const addVariant = async(req,res) =>{
-    console.log("file",req.file.originalname);
+    
     try {
         const empId = req.empId;
         const {

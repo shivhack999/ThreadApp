@@ -16,10 +16,10 @@ app.use(cors({
     origin: true,
     credentials: true // Allow cookies  
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increase limit for JSON payloads
+app.use(express.urlencoded({ limit: '10mb', extended: true })); // Increase limit for URL-encoded payloads
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 // connectMySQL();
