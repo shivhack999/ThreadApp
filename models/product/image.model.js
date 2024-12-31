@@ -11,10 +11,6 @@ const imageSchema = mongoose.Schema({
         enum:["Web","App"],
         required:true
     },
-    alt:{
-        type:String,
-        required:true
-    },
     url:{
         type:String,
         required:true

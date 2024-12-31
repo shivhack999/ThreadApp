@@ -367,7 +367,7 @@ const login =  async(req,res) =>{
         const responseEmpData = await Employee.findById(employeeData._id).select("-password -create_At -refreshToken -__v");
         const option ={
             httpOnly:true,
-            secure:true,
+            secure:false,
             sameSite:'strict'
         }
         return res.status(200)

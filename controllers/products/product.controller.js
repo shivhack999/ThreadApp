@@ -6,11 +6,12 @@ const Variant = require('../../models/product/variant.model');
 const Image = require('../../models/product/image.model');
 const insertMany = require('../../utils/query/insertMany');
 const find = require('../../utils/query/find');
-const { options } = require('../../routers/product.router');
+const Brand = require("../../models/product/brand.model");
+
 const addProduct = async(req,res) =>{
     const {
         title,
-        vendor,
+        vendorId,
         product_type,
         published_At,
         targetAudience,
@@ -24,7 +25,7 @@ const addProduct = async(req,res) =>{
         // Create a new Product instance
         const newProduct = new Product({
           title,
-          vendor,
+          vendorId,
           product_type,
           published_At,
           targetAudience,
@@ -44,13 +45,16 @@ const addProduct = async(req,res) =>{
             })
         }
     } catch (error) {
-        return res.status(500).json({
+        console.log(error)
+        return res.status(400).json({
             success:false,
             message:'Internal server error'
         })
     }
 }
 const showProduct = async(req,res)=>{
+    const device = req.device;
+    console.log(device)
     const { page = 1, limit = 10, sortBy = "created_At", order = "desc", title, brand, product_type, published_At, targetAudience, tags } = req.query;
     try {
         const pipeline = [];
@@ -174,6 +178,22 @@ const showProduct = async(req,res)=>{
                 limit: parseInt(limit),
                 count: products.length,
             },
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:'Internal server error'
+        })
+    }
+}
+const showProductTitle = async(req,res) =>{
+    try {
+        await find(Product,"title").then((response)=>{
+            return res.status(200).json({
+                success:true,
+                data:response
+            })
         });
 
     } catch (error) {
@@ -311,13 +331,14 @@ const addSubSubCategory = async(req,res)=>{
 }
 const showSubSubCategory = async(req,res) =>{
     try {
-        const listOfSSC = await SubSubCategory.find().exec();
+        const select = "name images";
+        const listOfSSC = await find(SubSubCategory,select);
         let status = (listOfSSC) ? 200 :400;
         const root = `${req.protocol}://${req.get('host')}/uploads`;
         return res.status(status).json({
             success:(status == 200) ? true :false,
             root:root,
-            response: (listOfSSC) ? listOfSSC : 'No Data found.'
+            data: (listOfSSC) ? listOfSSC : 'No Data found.'
         })
     } catch (error) {
         return res.status(500).json({
@@ -349,6 +370,7 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
     }
 }
 const addVariant = async(req,res) =>{
+    
     try {
         const empId = req.empId;
         const {
@@ -398,6 +420,7 @@ const addVariant = async(req,res) =>{
             message:'Something is wrong please try again.'
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success:false,
             message:'Internal server error'
@@ -407,12 +430,12 @@ const addVariant = async(req,res) =>{
 const addImages = async(req,res) =>{
     const empId = req.empId;
     try {
-        const { variantId, published_scope, alt} = req.body;
+        const { variantId, published_scope} = req.body;
         const files = req.body.images;
         console.log(files)
         var imageData = [];
         for(let index=0; index<files.length; ++index){
-            imageData.push({variantId, published_scope:published_scope, alt:alt, url:files[index], position:index, created_By:empId });
+            imageData.push({variantId, published_scope:published_scope, url:files[index], position:index, created_By:empId });
         }
         const savedImage = await insertMany(Image, imageData);
 
@@ -436,6 +459,7 @@ const addImages = async(req,res) =>{
 }
 const showAllColorOfProduct = async(req,res) =>{
     try {
+
         const select = "color -_id";
         const modelName = Variant;
         const colorList = await find(modelName,select);
@@ -511,9 +535,51 @@ const showAllFilters = async(req,res) =>{
         })
     }
 }
+const addBrand = async(req,res) =>{
+    try {
+    const empId = req.empId;
+    const {name} = req.body;
+    let insertData = [];
+    for(let i=0; i<name.length; ++i){
+        const temp ={
+            created_By:empId,
+            name:name[i]
+        }
+        insertData.push(temp);
+    }
+    brandResponse = await insertMany(Brand, insertData);
+    if(brandResponse){
+        return res.status(201).json({
+            success:true,
+            message:"Brand added successfully."
+        })
+    }
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong'
+        })
+    }
+}
+const showBrand = async(req,res) =>{
+    try {
+        const brandList = await find(Brand,"name");
+        return res.status(200).json({
+            success:true,
+            message:"List of all brands.",
+            data:brandList
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:'Something is wrong'
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
+    showProductTitle,
     productDetails,
     addCategory,
     showCategory,
@@ -526,5 +592,7 @@ module.exports = {
     addImages,
     showAllColorOfProduct,
     showAllColorOfVariant,
-    showAllFilters
+    showAllFilters,
+    addBrand,
+    showBrand
 }
