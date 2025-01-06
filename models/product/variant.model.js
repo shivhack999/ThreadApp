@@ -83,7 +83,7 @@ const variantSchema = new mongoose.Schema({
     },
     quantity_rule:{
         type:quantityRuleSchema,
-        required:true
+        // required:true
     },
     price_currency:{
         type:String,
@@ -104,7 +104,7 @@ const variantSchema = new mongoose.Schema({
     },
     updated_By:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'EMployee'
+        ref:'Employee'
     },
     created_At:{
         type:Date,

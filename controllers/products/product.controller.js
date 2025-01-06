@@ -370,7 +370,9 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
     }
 }
 const addVariant = async(req,res) =>{
-    
+    console.log("Request Body:", req.body); // Logs other form fields
+    console.log("Uploaded File:", req.files['colorImage']); // Logs file metadata if the upload works
+    return;
     try {
         const empId = req.empId;
         const {
@@ -387,13 +389,15 @@ const addVariant = async(req,res) =>{
             description,
             barcode,
             taxable,
-            quantity_rule,
+            min,
+            increment
         } = req.body;
         const newVariant = new Variant({
             productId,
             title,
             quantity,
             color,
+            colorImage:colorImage[0]?.filename,
             material,
             buy_price,
             sale_price,
@@ -403,24 +407,61 @@ const addVariant = async(req,res) =>{
             description,
             barcode,
             taxable,
-            quantity_rule,
+            quantity_rule:{min,increment},
+            // quantity_rule,
             created_By : empId,
             created_At:Date.now()
         });
-        const savedVariant = await newVariant.save();
-        if(savedVariant){
-            return res.status(201).json({
-                success:true,
-                message:"Variant save successfully.",
-                variant:savedVariant                
-            })
-        }
-        return res.status(400).json({
-            success:false,
-            message:'Something is wrong please try again.'
-        })
+
+        await newVariant.save().then(async(response,error)=>{
+            if(error){
+                return res.status(400).json({
+                    success:false,
+                    message:"Something is wrong please connect with developer."
+                })
+            }
+
+            if(response){
+                let newImageData =[];
+                // for web image
+                for(let index=0; index<webImages.length; ++index){
+                    let temp={
+                        variantId:response._id,
+                        published_scope:"Web",
+                        url:webImages[index]?.filename,
+                        position:index,
+                        created_By:empId
+                    }
+                    newImageData.push(temp);
+                }
+                // for app image
+                for(let index=0; index<appImages.length; ++index){
+                    let temp={
+                        variantId:response._id,
+                        published_scope:"Web",
+                        url:appImages[index]?.filename,
+                        position:index,
+                        created_By:empId
+                    }
+                    newImageData.push(temp);
+                }
+                const imageResponse = await insertMany(Image,newImageData);
+                if(imageResponse){
+                    return res.status(201).json({
+                        success:true,
+                        message:"Variant added successfully"
+                    })
+                }else{
+                    return res.status(400).json({
+                        success:false,
+                        message:'Something is wrong please try again.'
+                    })
+                }
+            }
+        });
+        
     } catch (error) {
-        console.log(error)
+        console.log("variant",error)
         return res.status(500).json({
             success:false,
             message:'Internal server error'
@@ -576,6 +617,25 @@ const showBrand = async(req,res) =>{
         })
     }
 }
+const test = async(req,res)=>{
+    try {
+        const webImages = req.files['webImages'] || [];
+        const appImages = req.files['appImages'] || [];
+        const colorimage = req.files['colorImage'] || [];
+
+        return res.status(200).json({
+            success:true,
+            webImages,
+            appImages,
+            colorimage
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:error
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -594,5 +654,6 @@ module.exports = {
     showAllColorOfVariant,
     showAllFilters,
     addBrand,
-    showBrand
+    showBrand,
+    test
 }

@@ -313,7 +313,7 @@ const deletePermission = async(req,res)=>{
     }
     // Return a success message
     res.status(200).json({
-      message: 'Permission deleted successfully.',
+      message: 'Permission deleted succe    ssfully.',
       data: deletedPermission
     });
     } catch (error) {
@@ -335,7 +335,7 @@ const login =  async(req,res) =>{
             })
         }
         const {email, password} = req.body;
-        console.log(email,password)
+        // console.log(email,password)
         const employeeData = await Employee.findOne({email}).exec();
         // console.log(userData)
         if(!employeeData){
