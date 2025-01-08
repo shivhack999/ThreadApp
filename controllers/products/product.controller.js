@@ -371,8 +371,7 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
 }
 const addVariant = async(req,res) =>{
     console.log("Request Body:", req.body); // Logs other form fields
-    console.log("Uploaded File:", req.files['colorImage']); // Logs file metadata if the upload works
-    return;
+    console.log("Uploaded File:", req.files); // Logs file metadata if the upload works
     try {
         const empId = req.empId;
         const {

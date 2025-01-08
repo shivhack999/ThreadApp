@@ -113,6 +113,14 @@ const variantSchema = new mongoose.Schema({
     updated_At:{
         type:Date
     },
+    appImage:{
+        type:[String],
+        required:true
+    },
+    webImage:{
+        type:[String],
+        required:true,
+    }
 })
 // Apply the AutoIncrement plugin to the serial_number field
 variantSchema.plugin(AutoIncrement, { inc_field: 'serial_number' });
