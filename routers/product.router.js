@@ -26,7 +26,7 @@ router.post("/addSubSubCategory", deviceIdentify, dynamicUpload("products/sub_su
 router.get("/showSubSubCategory", deviceIdentify, productController.showSubSubCategory);
 router.put("/incrementSubSubProductSearchCount/:id", deviceIdentify, productController.incrementSubSubProductSearchCount);
 router.post("/addImages", deviceIdentify, empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addImages);
-router.post("/addVariant", deviceIdentify, empTokenVerify, multipleUpload("/products/variant",imageFields), productController.addVariant);
+router.post("/addVariant", deviceIdentify, empTokenVerify, productController.addVariant);
 router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllColorOfVariant);
 router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);

@@ -370,8 +370,6 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
     }
 }
 const addVariant = async(req,res) =>{
-    console.log("Request Body:", req.body); // Logs other form fields
-    console.log("Uploaded File:", req.files); // Logs file metadata if the upload works
     try {
         const empId = req.empId;
         const {
@@ -391,12 +389,18 @@ const addVariant = async(req,res) =>{
             min,
             increment
         } = req.body;
+        console.log("body",req.body);
+        console.log("query", req.query);
+        console.log("params", req.params)
+        // console.log("appImages", req.file["appImages"]);
+        // console.log("webImages", req.file["webImages"]);
+        console.log("colorImage", req.file.filename);
         const newVariant = new Variant({
             productId,
             title,
             quantity,
             color,
-            colorImage:colorImage[0]?.filename,
+            colorImage:req.file.filename,
             material,
             buy_price,
             sale_price,
@@ -407,12 +411,11 @@ const addVariant = async(req,res) =>{
             barcode,
             taxable,
             quantity_rule:{min,increment},
-            // quantity_rule,
             created_By : empId,
             created_At:Date.now()
         });
 
-        await newVariant.save().then(async(response,error)=>{
+        await newVariant.save().then(async(response)=>{
             if(error){
                 return res.status(400).json({
                     success:false,
@@ -457,6 +460,8 @@ const addVariant = async(req,res) =>{
                     })
                 }
             }
+        }).catch((error)=>{
+            console.log("catch error",error)
         });
         
     } catch (error) {
