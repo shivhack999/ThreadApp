@@ -371,6 +371,10 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
 }
 const addVariant = async(req,res) =>{
     try {
+        // return res.status(200).json({
+        //     success:true,
+        //     message:"hello"
+        // })
         const empId = req.empId;
         const {
             productId,
@@ -392,9 +396,7 @@ const addVariant = async(req,res) =>{
         console.log("body",req.body);
         console.log("query", req.query);
         console.log("params", req.params)
-        // console.log("appImages", req.file["appImages"]);
-        // console.log("webImages", req.file["webImages"]);
-        console.log("colorImage", req.file.filename);
+        console.log("colorImage", req.file);
         const newVariant = new Variant({
             productId,
             title,
