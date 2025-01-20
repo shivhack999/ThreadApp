@@ -25,12 +25,11 @@ router.get("/showSubCategory", deviceIdentify, productController.showSubCategory
 router.post("/addSubSubCategory", deviceIdentify, dynamicUpload("products/sub_sub_category"), productController.addSubSubCategory); //remove space in image name 
 router.get("/showSubSubCategory", deviceIdentify, productController.showSubSubCategory);
 router.put("/incrementSubSubProductSearchCount/:id", deviceIdentify, productController.incrementSubSubProductSearchCount);
-router.post("/addImages", deviceIdentify, empTokenVerify, dynamicUpload("/products/t-shirt"), productController.addImages);
-router.post("/addVariant", deviceIdentify, empTokenVerify, productController.addVariant);
+router.post("/addVariant", deviceIdentify, empTokenVerify, multipleUpload("/products/variant",imageFields), productController.addVariant);
 router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllColorOfVariant);
 router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);
-router.post("/addbrand", empTokenVerify, productController.addBrand);
+router.post("/addBrand", empTokenVerify, productController.addBrand);
 router.get("/showBrand", productController.showBrand); 
 // router.post("/test", multipleUpload("/products/variant",imageFields), productController.test);
 

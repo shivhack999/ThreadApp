@@ -371,10 +371,6 @@ const incrementSubSubProductSearchCount = async(req,res) =>{
 }
 const addVariant = async(req,res) =>{
     try {
-        // return res.status(200).json({
-        //     success:true,
-        //     message:"hello"
-        // })
         const empId = req.empId;
         const {
             productId,
@@ -393,16 +389,16 @@ const addVariant = async(req,res) =>{
             min,
             increment
         } = req.body;
-        console.log("body",req.body);
-        console.log("query", req.query);
-        console.log("params", req.params)
-        console.log("colorImage", req.file);
+        // console.log("body",req.body);
+        // console.log("query", req.query);
+        // console.log("params", req.params)
+        // console.log("colorImage", req.files['colorImage'] || []);
         const newVariant = new Variant({
             productId,
             title,
             quantity,
             color,
-            colorImage:req.file.filename,
+            colorImage:req.files['colorImage']?.filename,
             material,
             buy_price,
             sale_price,
@@ -418,13 +414,6 @@ const addVariant = async(req,res) =>{
         });
 
         await newVariant.save().then(async(response)=>{
-            if(error){
-                return res.status(400).json({
-                    success:false,
-                    message:"Something is wrong please connect with developer."
-                })
-            }
-
             if(response){
                 let newImageData =[];
                 // for web image
@@ -468,36 +457,6 @@ const addVariant = async(req,res) =>{
         
     } catch (error) {
         console.log("variant",error)
-        return res.status(500).json({
-            success:false,
-            message:'Internal server error'
-        })
-    }
-}
-const addImages = async(req,res) =>{
-    const empId = req.empId;
-    try {
-        const { variantId, published_scope} = req.body;
-        const files = req.body.images;
-        console.log(files)
-        var imageData = [];
-        for(let index=0; index<files.length; ++index){
-            imageData.push({variantId, published_scope:published_scope, url:files[index], position:index, created_By:empId });
-        }
-        const savedImage = await insertMany(Image, imageData);
-
-        if(savedImage){
-            return res.status(201).json({
-                message:"Image Upload Successfully.",
-                success:true,
-                savedImage
-            })
-        }
-        return res.status(400).json({
-            success:false,
-            message:'Something is wrong please try again.'
-        })
-    } catch (error) {
         return res.status(500).json({
             success:false,
             message:'Internal server error'
@@ -655,7 +614,6 @@ module.exports = {
     showSubSubCategory,
     incrementSubSubProductSearchCount,
     addVariant,
-    addImages,
     showAllColorOfProduct,
     showAllColorOfVariant,
     showAllFilters,
