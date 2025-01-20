@@ -389,10 +389,10 @@ const addVariant = async(req,res) =>{
             min,
             increment
         } = req.body;
-        // console.log("body",req.body);
-        // console.log("query", req.query);
-        // console.log("params", req.params)
-        // console.log("colorImage", req.files['colorImage'] || []);
+        console.log("body",req.body);
+        console.log("query", req.query);
+        console.log("params", req.params)
+        console.log("colorImage", req.files['colorImage'] || []);
         const newVariant = new Variant({
             productId,
             title,
