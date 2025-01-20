@@ -31,6 +31,7 @@ router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllCo
 router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);
 router.post("/addBrand", empTokenVerify, productController.addBrand);
 router.get("/showBrand", productController.showBrand); 
+router.get("/showAllVariant", deviceIdentify, productController.showAllVariant);
 // router.post("/test", multipleUpload("/products/variant",imageFields), productController.test);
 
 

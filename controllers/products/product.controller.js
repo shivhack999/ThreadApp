@@ -389,16 +389,17 @@ const addVariant = async(req,res) =>{
             min,
             increment
         } = req.body;
-        console.log("body",req.body);
-        console.log("query", req.query);
-        console.log("params", req.params)
-        console.log("colorImage", req.files['colorImage'] || []);
+        const colorImage = req.files['colorImage'];
+        const webImages = req.files['webImages'];
+        const appImages = req.files['appImages'];
+        const colorImageName = colorImage[0].filename;
+
         const newVariant = new Variant({
             productId,
             title,
             quantity,
             color,
-            colorImage:req.files['colorImage']?.filename,
+            colorImage:colorImageName,
             material,
             buy_price,
             sale_price,
@@ -601,6 +602,22 @@ const test = async(req,res)=>{
         })
     }
 }
+const showAllVariant = async(req,res)=>{
+    try {
+        const select =" _id title color colorImage sale_price";
+        const response = await find(Variant, select);
+        return res.status(200).json({
+            success:true,
+            root:`${req.protocol}://${req.get('host')}/uploads/products/variant`,
+            data:response
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:error
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -619,5 +636,7 @@ module.exports = {
     showAllFilters,
     addBrand,
     showBrand,
+    showAllVariant,
     test
 }
+// all product -> productName, color , price
