@@ -91,7 +91,6 @@ const variantSchema = new mongoose.Schema({
     },
     targetAudience:{
         type: [String],
-        enum: ['Male', 'Female', 'Children', 'Unisex'],
         required: true
     },
     rating:{

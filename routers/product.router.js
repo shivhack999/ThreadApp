@@ -26,20 +26,19 @@ router.post("/addSubSubCategory", deviceIdentify, dynamicUpload("products/sub_su
 router.get("/showSubSubCategory", deviceIdentify, productController.showSubSubCategory);
 router.put("/incrementSubSubProductSearchCount/:id", deviceIdentify, productController.incrementSubSubProductSearchCount);
 router.post("/addVariant", deviceIdentify, empTokenVerify, multipleUpload("/products/variant",imageFields), productController.addVariant);
+router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);
 router.get("/showAllColorOfProduct", deviceIdentify, productController.showAllColorOfProduct);
 router.get("/showAllColorOfVariant", deviceIdentify, productController.showAllColorOfVariant);
-router.get("/showAllFilters", deviceIdentify, productController.showAllFilters);
 router.post("/addBrand", empTokenVerify, productController.addBrand);
 router.get("/showBrand", productController.showBrand); 
+
+
 router.get("/showAllVariant", deviceIdentify, productController.showAllVariant);
+router.get("/showVariantDetails", deviceIdentify, productController.showVariantDetails);
+
+
+
 // router.post("/test", multipleUpload("/products/variant",imageFields), productController.test);
-
-
-
-
-
-
-
 
 // // Configure multer storage
 // const storage = multer.diskStorage({
