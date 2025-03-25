@@ -7,6 +7,8 @@ const Image = require('../../models/product/image.model');
 const insertMany = require('../../utils/query/insertMany');
 const find = require('../../utils/query/find');
 const Brand = require("../../models/product/brand.model");
+const findById = require('../../utils/query/findById');
+const { default: mongoose } = require('mongoose');
 
 const addProduct = async(req,res) =>{
     const {
@@ -387,7 +389,9 @@ const addVariant = async(req,res) =>{
             barcode,
             taxable,
             min,
-            increment
+            increment,
+            size,
+            targetAudience
         } = req.body;
         const colorImage = req.files['colorImage'];
         const webImages = req.files['webImages'];
@@ -410,6 +414,8 @@ const addVariant = async(req,res) =>{
             barcode,
             taxable,
             quantity_rule:{min,increment},
+            size,
+            targetAudience,
             created_By : empId,
             created_At:Date.now()
         });
@@ -432,7 +438,7 @@ const addVariant = async(req,res) =>{
                 for(let index=0; index<appImages.length; ++index){
                     let temp={
                         variantId:response._id,
-                        published_scope:"Web",
+                        published_scope:"App",
                         url:appImages[index]?.filename,
                         position:index,
                         created_By:empId
@@ -618,6 +624,39 @@ const showAllVariant = async(req,res)=>{
         })
     }
 }
+const showVariantDetails = async(req,res) =>{
+    try {
+        const variantId = req.query.variantId || req.body.variantId || req.params.variantId;
+        const device = req.device;
+        console.log(device)
+        const select = "productId";
+        const variantDetails = await findById(Variant, variantId, select);
+        const pipeline =[];
+        if(variantDetails?.productId){
+            pipeline.push({
+                $match: { productId : new mongoose.Types.ObjectId(variantDetails?.productId)}
+            });
+        }
+        pipeline.push({
+            $lookup:{
+                from:'images',
+                localField:'_id',
+                foreignField:'variantId',
+                as:"Images"
+            }
+        })
+        const variantList = await Variant.aggregate(pipeline);
+        return res.status(200).json({
+            success:true,
+            data:variantList
+        })
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message:error
+        })
+    }
+}
 module.exports = {
     addProduct,
     showProduct,
@@ -630,13 +669,16 @@ module.exports = {
     addSubSubCategory,
     showSubSubCategory,
     incrementSubSubProductSearchCount,
-    addVariant,
     showAllColorOfProduct,
     showAllColorOfVariant,
     showAllFilters,
     addBrand,
     showBrand,
+    test,
+    
+    
+    addVariant,
     showAllVariant,
-    test
+    showVariantDetails
 }
 // all product -> productName, color , price
