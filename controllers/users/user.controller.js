@@ -45,7 +45,7 @@ const emailOTPSent = async(req,res) =>{
             })
         }
         const OTP = await generateOTP();
-        console.log(OTP);
+
         const subject = process.env.APP_NAME;
         const message = `Dear User, your OTP for completing the verification process is ${OTP}. Please use this code within the next 15 minutes to proceed. For your security, do not share this code with anyone. If you did not request this, please contact our support team immediately.`
         const mailResponse = sendMail(email, subject, message);
