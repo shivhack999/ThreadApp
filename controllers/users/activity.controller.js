@@ -7,18 +7,24 @@ const capitalize = require('../../helpers/capitalize');
 const addToCart = async(req,res) =>{
     try {
         const userID = req.userID;
-        const {product, sell_price} = req.body;
-        const productData = await Product.findById(product).select("min_price -_id").exec();
+        const {productId, sell_price} = req.body;
+        if(!productId || !sell_price){
+            return res.status(400).json({
+                success:false,
+                message:"All fields are required."
+            })
+        }
+        const productData = await Product.findById(productId).select("min_price -_id").exec();
         // compare selling price with product minimum selling  price if product minimum selling price is low of selling price then not allow  
         if(productData.min_price > sell_price){
             return res.status(400).json({
                 success:false,
-                response:`Any seller can't sell product on  ${ sell_price} price.`
+                response:`Any seller can't sell product on ${ sell_price} price.`
             })
         }
         const newData = new Cart({
             user:userID,
-            product,
+            productId,
             sell_price: Math.ceil(sell_price)
         });
         const newCartResponse = await newData.save();
@@ -42,7 +48,7 @@ const addToCart = async(req,res) =>{
 const removeToCart = async(req,res)=>{
     try {
         const userID = req.userID;
-        const productId = req.query['productId'];
+        const productId = req.query.productId;
         if(!productId){
             return res.status(400).json({
                 success:false,

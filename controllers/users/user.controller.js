@@ -482,7 +482,7 @@ const addressDelete = async(req,res) =>{
 }
 const addressUpdate = async(req,res)=>{
     try {
-        const userId = req.userID;
+        const userId = req?.userID;
         const {
             addressId,
             fullName,
