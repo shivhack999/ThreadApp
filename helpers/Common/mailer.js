@@ -8,15 +8,15 @@ const sendEmail = async(receiverEmail, subject, message) =>{
             host:'smtp.gmail.com',
             port:465,
             auth: {
-                user: "shivhack999@gmail.com", 
+                user: process.env.GMAIL, 
                 pass: process.env.GMAIL_PASSWORD, 
             },
         });
         // Set up email data
         const mailOptions = {
-            from: "shivhack999@gmail.com",      // Sender address
-            to: receiverEmail,                 // List of receivers
-            subject: subject,          // Subject line
+            from: process.env.GMAIL,      // Sender address
+            to: receiverEmail,           // List of receivers
+            subject: subject,           // Subject line
             text: message,
         };
         const info = await transporter.sendMail(mailOptions);
